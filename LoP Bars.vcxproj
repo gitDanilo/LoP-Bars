@@ -203,6 +203,7 @@
     <ClCompile Include="minhook\src\trampoline.c" />
     <ClCompile Include="utility\Address.cpp" />
     <ClCompile Include="utility\FunctionHook.cpp" />
+    <ClCompile Include="utility\Memory.cpp" />
     <ClCompile Include="utility\Module.cpp" />
     <ClCompile Include="utility\PointerHook.cpp" />
     <ClCompile Include="utility\String.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="minhook\src\trampoline.h" />
     <ClInclude Include="utility\Address.hpp" />
     <ClInclude Include="utility\FunctionHook.hpp" />
+    <ClInclude Include="utility\Memory.hpp" />
     <ClInclude Include="utility\Module.hpp" />
     <ClInclude Include="utility\PointerHook.hpp" />
     <ClInclude Include="utility\String.hpp" />

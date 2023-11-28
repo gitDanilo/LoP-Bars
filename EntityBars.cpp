@@ -1,16 +1,35 @@
 #include "EntityBars.hpp"
+#include "utility/Module.hpp"
+#include "utility/Memory.hpp"
 #include "utility/Log.hpp"
 #include <format>
 
+static EntityBars* gEntityBars = nullptr;
+
 EntityBars::EntityBars() : inputData()
 {
+	gEntityBars = this;
 	inputData.bShowWindow = true;
 	inputData.iPosition = WINDOW_POSITION::CENTER_RIGHT;
 }
 
 EntityBars::~EntityBars()
 {
+	if (pSetLockOnHook != nullptr)
+	{
+		pSetLockOnHook->Remove();
+	}
+	gEntityBars = nullptr;
+}
 
+void EntityBars::SetLockOn(void* unknown1, void* pLockOn, void* unknown2)
+{
+	auto fnSetLockOn = gEntityBars->pSetLockOnHook->GetOriginal<decltype(EntityBars::SetLockOn)>();
+
+	LOG_INFO("LockOnObj addr: " << std::hex << pLockOn);
+
+
+	fnSetLockOn(unknown1, pLockOn, unknown2);
 }
 
 void EntityBars::GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVec2& windowPosPivot, const float PAD)
@@ -147,7 +166,44 @@ void EntityBars::OnDraw()
 
 bool EntityBars::OnInitialize()
 {
-	return false;
+	LOG_INFO("Initializing EntityBars...");
+
+	HMODULE hExec = utility::GetExecutable();
+	if (hExec == NULL)
+	{
+		LOG_ERROR("Failed to get executable address");
+		return false;
+	}
+
+	std::optional<size_t> sizeExec = utility::GetModuleSize(hExec);
+	if (!sizeExec.has_value())
+	{
+		LOG_ERROR("Failed to get executable size");
+		return false;
+	}
+
+	auto fnSetLockOn = utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), (char*)hExec, sizeExec.value_or(0));
+	if (fnSetLockOn == nullptr)
+	{
+		LOG_ERROR("Failed to find SetLockOn function signature");
+		return false;
+	}
+
+	if (utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), fnSetLockOn + 1, sizeExec.value_or(0)) != nullptr)
+	{
+		LOG_ERROR("Failed to find the unique function signature of SetLockOn");
+		return false;
+	}
+
+	fnSetLockOn -= SET_LOCKON_FN_SIGNATURE_OFFSET;
+	
+	pSetLockOnHook = std::make_unique<FunctionHook>(fnSetLockOn, &EntityBars::SetLockOn);
+	if (!pSetLockOnHook->Create())
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void EntityBars::OnReset()

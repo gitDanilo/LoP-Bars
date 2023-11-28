@@ -12,6 +12,9 @@ LoPBars::LoPBars() : iD3D12(), hWnd(0), bIsInitialized(false), initAttemptCount(
 
 	imGuiWindows.push_back(std::make_unique<EntityBars>());
 
+	for (auto& wnd : imGuiWindows)
+		wnd->OnInitialize();
+
 	if (!HookD3D12())
 	{
 		LOG_ERROR("Failed to hook D3D12");

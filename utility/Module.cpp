@@ -16,27 +16,33 @@
 
 #pragma comment(lib, "Shlwapi.lib")
 
-namespace utility {
-	std::optional<size_t> GetModuleSize(const std::wstring& module) {
+namespace utility
+{
+	std::optional<size_t> GetModuleSize(const std::wstring& module)
+	{
 		return GetModuleSize(GetModuleHandle(module.c_str()));
 	}
 
-	std::optional<size_t> GetModuleSize(HMODULE module) {
-		if (module == nullptr) {
+	std::optional<size_t> GetModuleSize(HMODULE module)
+	{
+		if (module == nullptr)
+		{
 			return {};
 		}
 
 		// Get the dos header and verify that it seems valid.
 		auto dosHeader = (PIMAGE_DOS_HEADER)module;
 
-		if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
+		if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE)
+		{
 			return {};
 		}
 
 		// Get the nt headers and verify that they seem valid.
 		auto ntHeaders = (PIMAGE_NT_HEADERS)((uintptr_t)dosHeader + dosHeader->e_lfanew);
 
-		if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
+		if (ntHeaders->Signature != IMAGE_NT_SIGNATURE)
+		{
 			return {};
 		}
 
@@ -44,41 +50,49 @@ namespace utility {
 		return ntHeaders->OptionalHeader.SizeOfImage;
 	}
 
-	std::optional<HMODULE> GetModuleWithin(Address address) {
+	std::optional<HMODULE> GetModuleWithin(Address address)
+	{
 		HMODULE module = nullptr;
-		if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, address.As<LPWSTR>(), &module)) {
+		if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, address.As<LPWSTR>(), &module))
+		{
 			return module;
 		}
 
 		return {};
 	}
 
-	std::optional<uintptr_t> GetDLLImageBase(Address dll) {
-		if (dll == nullptr) {
+	std::optional<uintptr_t> GetDLLImageBase(Address dll)
+	{
+		if (dll == nullptr)
+		{
 			return {};
 		}
 
 		// Get the dos header and verify that it seems valid.
 		auto dosHeader = dll.As<PIMAGE_DOS_HEADER>();
 
-		if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
+		if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE)
+		{
 			return {};
 		}
 
 		// Get the nt headers and verify that they seem valid.
 		auto ntHeaders = (PIMAGE_NT_HEADERS)((uintptr_t)dosHeader + dosHeader->e_lfanew);
 
-		if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
+		if (ntHeaders->Signature != IMAGE_NT_SIGNATURE)
+		{
 			return {};
 		}
 
 		return ntHeaders->OptionalHeader.ImageBase;
 	}
 
-	std::optional<uintptr_t> GetImageBaseVAFromPtr(Address dll, Address base, void* ptr) {
+	std::optional<uintptr_t> GetImageBaseVAFromPtr(Address dll, Address base, void* ptr)
+	{
 		auto imgBase = GetDLLImageBase(dll);
 
-		if (!imgBase) {
+		if (!imgBase)
+		{
 			return {};
 		}
 
@@ -86,27 +100,33 @@ namespace utility {
 	}
 
 
-	std::optional<std::string> GetModulePath(HMODULE module) {
+	std::optional<std::string> GetModulePath(HMODULE module)
+	{
 		wchar_t sFilename[MAX_PATH] = { 0 };
-		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH) {
+		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH)
+		{
 			return {};
 		}
 
 		return utility::narrow(sFilename);
 	}
 
-	std::optional<std::wstring> GetModulePathW(HMODULE module) {
+	std::optional<std::wstring> GetModulePathW(HMODULE module)
+	{
 		wchar_t sFilename[MAX_PATH] = { 0 };
-		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH) {
+		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH)
+		{
 			return {};
 		}
 
 		return sFilename;
 	}
 
-	std::optional<std::string> GetModuleDirectory(HMODULE module) {
+	std::optional<std::string> GetModuleDirectory(HMODULE module)
+	{
 		wchar_t sFilename[MAX_PATH] = { 0 };
-		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH) {
+		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH)
+		{
 			return {};
 		}
 
@@ -115,9 +135,11 @@ namespace utility {
 		return utility::narrow(sFilename);
 	}
 
-	std::optional<std::wstring> GetModuleDirectoryW(HMODULE module) {
+	std::optional<std::wstring> GetModuleDirectoryW(HMODULE module)
+	{
 		wchar_t sFilename[MAX_PATH] = { 0 };
-		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH) {
+		if (GetModuleFileNameW(module, sFilename, MAX_PATH) >= MAX_PATH)
+		{
 			return {};
 		}
 
@@ -126,10 +148,12 @@ namespace utility {
 		return sFilename;
 	}
 
-	HMODULE LoadModuleFromCurrentDirectory(const std::wstring& module) {
+	HMODULE LoadModuleFromCurrentDirectory(const std::wstring& module)
+	{
 		const auto sCurrentPath = GetModuleDirectoryW(GetExecutable());
 
-		if (!sCurrentPath) {
+		if (!sCurrentPath)
+		{
 			return nullptr;
 		}
 
@@ -138,17 +162,20 @@ namespace utility {
 		return LoadLibraryW(fsPath.c_str());
 	}
 
-	std::vector<uint8_t> ReadModuleFromDisk(HMODULE module) {
+	std::vector<uint8_t> ReadModuleFromDisk(HMODULE module)
+	{
 		auto path = GetModulePath(module);
 
-		if (!path) {
+		if (!path)
+		{
 			return {};
 		}
 
 		// read using std utilities like ifstream and tellg, etc.
 		auto file = std::ifstream{ path->c_str(), std::ios::binary | std::ios::ate };
 
-		if (!file.is_open()) {
+		if (!file.is_open())
+		{
 			return {};
 		}
 
@@ -163,26 +190,31 @@ namespace utility {
 		return data;
 	}
 
-	std::optional<std::vector<uint8_t>> GetOriginalBytes(Address address) {
+	std::optional<std::vector<uint8_t>> GetOriginalBytes(Address address)
+	{
 		auto moduleWithin = GetModuleWithin(address);
 
-		if (!moduleWithin) {
+		if (!moduleWithin)
+		{
 			return {};
 		}
 
 		return GetOriginalBytes(*moduleWithin, address);
 	}
 
-	std::optional<std::vector<uint8_t>> GetOriginalBytes(HMODULE module, Address address) {
+	std::optional<std::vector<uint8_t>> GetOriginalBytes(HMODULE module, Address address)
+	{
 		auto disk_data = ReadModuleFromDisk(module);
 
-		if (disk_data.empty()) {
+		if (disk_data.empty())
+		{
 			return std::nullopt;
 		}
 
 		auto moduleBase = GetDLLImageBase(module);
 
-		if (!moduleBase) {
+		if (!moduleBase)
+		{
 			return std::nullopt;
 		}
 
@@ -191,7 +223,8 @@ namespace utility {
 		// obtain the file offset of the address now
 		auto pDisk = PtrFromRVA(disk_data.data(), moduleRVA);
 
-		if (!pDisk) {
+		if (!pDisk)
+		{
 			return std::nullopt;
 		}
 
@@ -202,19 +235,24 @@ namespace utility {
 
 		// copy the bytes from the disk data to the original bytes
 		// copy only until the bytes start to match eachother
-		for (auto i = 0; ; ++i) {
-			if (aobModule[i] == aobDisk[i]) {
+		for (auto i = 0; ; ++i)
+		{
+			if (aobModule[i] == aobDisk[i])
+			{
 				bool actually_matches = true;
 
 				// Lookahead 4 bytes to check if any other part is different before breaking out.
-				for (auto j = 1; j <= 4; ++j) {
-					if (aobModule[i + j] != aobDisk[i + j]) {
+				for (auto j = 1; j <= 4; ++j)
+				{
+					if (aobModule[i + j] != aobDisk[i + j])
+					{
 						actually_matches = false;
 						break;
 					}
 				}
 
-				if (actually_matches) {
+				if (actually_matches)
+				{
 					break;
 				}
 			}
@@ -222,14 +260,16 @@ namespace utility {
 			aobOriginal.push_back(aobDisk[i]);
 		}
 
-		if (aobOriginal.empty()) {
+		if (aobOriginal.empty())
+		{
 			return std::nullopt;
 		}
 
 		return aobOriginal;
 	}
 
-	HMODULE GetExecutable() {
+	HMODULE GetExecutable()
+	{
 		return GetModuleHandle(nullptr);
 	}
 
@@ -241,19 +281,20 @@ namespace utility {
 
 		const auto base = (uintptr_t)module;
 
-		if (base == 0) {
+		if (base == 0)
+		{
 			return module;
 		}
 
 		// this SHOULD be thread safe...?
 		ForEachModule([&](LIST_ENTRY* entry, _LDR_DATA_TABLE_ENTRY* ldr_entry)
-		{
-			if ((uintptr_t)ldr_entry->DllBase == base)
 			{
-				entry->Blink->Flink = entry->Flink;
-				entry->Flink->Blink = entry->Blink;
-			}
-		});
+				if ((uintptr_t)ldr_entry->DllBase == base)
+				{
+					entry->Blink->Flink = entry->Flink;
+					entry->Flink->Blink = entry->Blink;
+				}
+			});
 
 		return module;
 	}
@@ -276,17 +317,17 @@ namespace utility {
 		HMODULE module = nullptr;
 
 		ForEachModule([&](LIST_ENTRY* entry, _LDR_DATA_TABLE_ENTRY* ldr_entry)
-		{
-			if (module != nullptr)
 			{
-				return;
-			}
+				if (module != nullptr)
+				{
+					return;
+				}
 
-			if (std::wstring_view{ ldr_entry->FullDllName.Buffer }.find(name) != std::wstring_view::npos)
-			{
-				module = (HMODULE)ldr_entry->DllBase;
-			}
-		});
+				if (std::wstring_view{ ldr_entry->FullDllName.Buffer }.find(name) != std::wstring_view::npos)
+				{
+					module = (HMODULE)ldr_entry->DllBase;
+				}
+			});
 
 		return module;
 	}
@@ -339,15 +380,15 @@ namespace utility {
 		std::transform(name.begin(), name.end(), sLowerName, ::towlower);
 
 		ForEachModule([&](LIST_ENTRY* entry, _LDR_DATA_TABLE_ENTRY* ldr_entry)
-		{
-			wchar_t sLowerDLLName[MAX_PATH] = { 0 };
-			std::transform(ldr_entry->FullDllName.Buffer, ldr_entry->FullDllName.Buffer + ldr_entry->FullDllName.Length, sLowerDLLName, ::towlower);
-
-			if (std::wstring_view{ sLowerDLLName }.find(sLowerName) != std::wstring_view::npos)
 			{
-				++out;
-			}
-		});
+				wchar_t sLowerDLLName[MAX_PATH] = { 0 };
+				std::transform(ldr_entry->FullDllName.Buffer, ldr_entry->FullDllName.Buffer + ldr_entry->FullDllName.Length, sLowerDLLName, ::towlower);
+
+				if (std::wstring_view{ sLowerDLLName }.find(sLowerName) != std::wstring_view::npos)
+				{
+					++out;
+				}
+			});
 
 		return out;
 	}
@@ -364,7 +405,8 @@ namespace utility {
 		{
 			auto size = section->Misc.VirtualSize;
 
-			if (size == 0) {
+			if (size == 0)
+			{
 				size = section->SizeOfRawData;
 			}
 
