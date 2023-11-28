@@ -175,17 +175,18 @@ void LoPBars::SetImGuiStyle()
 	ImGui::StyleColorsDark();
 
 	auto& style = ImGui::GetStyle();
-	style.WindowRounding = 2.0f;
+	style.WindowRounding = 4.0f;
 	style.ChildRounding = 2.0f;
 	style.PopupRounding = 2.0f;
 	style.FrameRounding = 2.0f;
 	style.ScrollbarRounding = 2.0f;
-	style.GrabRounding = 0.0f;
-	style.TabRounding = 0.0f;
-	style.WindowBorderSize = 2.0f;
-	style.WindowPadding = ImVec2(2.0f, 0.0f);
+	style.SelectableTextAlign = ImVec2(0.5f, 0.5f);
+	style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
+	style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
+	style.SeparatorTextAlign = ImVec2(0.5f, 0.5f);
 
 	auto& colors = ImGui::GetStyle().Colors;
+	colors[ImGuiCol_FrameBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 bool LoPBars::InitializeD3D12()
