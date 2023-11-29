@@ -187,6 +187,7 @@ void LoPBars::SetImGuiStyle()
 	style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
 	style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
 	style.SeparatorTextAlign = ImVec2(0.5f, 0.5f);
+	style.WindowMenuButtonPosition = ImGuiDir_None;
 
 	auto& colors = ImGui::GetStyle().Colors;
 	colors[ImGuiCol_FrameBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);

@@ -6,11 +6,14 @@
 
 static EntityBars* gEntityBars = nullptr;
 
-EntityBars::EntityBars() : inputData()
+using namespace std::chrono_literals;
+
+EntityBars::EntityBars() : inputData(), lockedEntity(), bIsInitialized(false), pLockOn(nullptr)
 {
 	gEntityBars = this;
 	inputData.bShowWindow = true;
 	inputData.iPosition = WINDOW_POSITION::CENTER_RIGHT;
+	lockedEntity.bIsActive = false;
 }
 
 EntityBars::~EntityBars()
@@ -19,17 +22,68 @@ EntityBars::~EntityBars()
 	{
 		pSetLockOnHook->Remove();
 	}
+
+	if (pThreadUpdateEntity != nullptr)
+	{
+		pThreadUpdateEntity->request_stop();
+		pThreadUpdateEntity.reset();
+	}
+
 	gEntityBars = nullptr;
 }
 
-void EntityBars::SetLockOn(void* unknown1, void* pLockOn, void* unknown2)
+void EntityBars::SetLockOn(void* unknown1, char* pLockOn, void* unknown2)
 {
+	LOG_INFO("SetLockOn called with: " << std::hex << unknown1 << ", " << (void*)pLockOn << ", " << unknown2);
+
 	auto fnSetLockOn = gEntityBars->pSetLockOnHook->GetOriginal<decltype(EntityBars::SetLockOn)>();
 
-	LOG_INFO("LockOnObj addr: " << std::hex << pLockOn);
-
+	gEntityBars->pLockOn = pLockOn;
 
 	fnSetLockOn(unknown1, pLockOn, unknown2);
+}
+
+#define POOLING_INTERVAL 1000ms
+#define PTR (p, o) (char*)p[o]
+void EntityBars::UpdateEntityData(std::stop_token stopToken)
+{
+	LOP_ENTITY tmpEntity = { };
+	char* pEntityBase = nullptr;
+	char* pLastEntityBase = nullptr;
+	char* pTmp = nullptr;
+	bool bKeepMaxValues = false;
+
+	int test = 0;
+
+	do
+	{
+		if (pLockOn == nullptr)
+		{
+			std::this_thread::sleep_for(POOLING_INTERVAL);
+			continue;
+		}
+
+		pEntityBase = (char*)(*(int64_t*)(pLockOn + 0x200));
+
+		if (pEntityBase == nullptr && pLastEntityBase == nullptr)
+		{
+			lockedEntity.bIsActive = false;
+			std::this_thread::sleep_for(POOLING_INTERVAL);
+			continue;
+		}
+
+		pEntityBase = pEntityBase == nullptr ? pLastEntityBase : pEntityBase;
+		bKeepMaxValues = pEntityBase == pLastEntityBase;
+
+		test = *(int*)(*(int64_t*)(*(int64_t*)((*(int64_t*)(pEntityBase + 0x848)) + 0xE0) + 0x28) + 0xC);
+
+		LOG_INFO("Health: " << std::dec << test);
+
+		pLastEntityBase = pEntityBase;
+		std::this_thread::sleep_for(POOLING_INTERVAL);
+	} while (!stopToken.stop_requested());
+
+	LOG_INFO("Thread UpdateEntityData is stopping...");
 }
 
 void EntityBars::GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVec2& windowPosPivot, const float PAD)
@@ -92,6 +146,9 @@ void EntityBars::GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVe
 
 void EntityBars::OnDraw()
 {
+	if (!bIsInitialized)
+		return;
+
 	static INPUT_DATA tmpInputData = { 0 };
 	inputData.GetData(tmpInputData);
 
@@ -113,30 +170,30 @@ void EntityBars::OnDraw()
 
 		auto& io = ImGui::GetIO();
 
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDecoration |
-			ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize |
 			ImGuiWindowFlags_NoSavedSettings |
 			ImGuiWindowFlags_NoFocusOnAppearing |
 			ImGuiWindowFlags_NoNav;
+
 		if (!tmpInputData.bEnableDrag)
-			windowFlags = windowFlags | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove;
+			windowFlags = windowFlags | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
+		else
+			ImGui::SetNextWindowFocus();
 
 		io.MouseDrawCursor = tmpInputData.bEnableDrag;
 
 		const auto PAD = 10.0f;
 		ImVec2 windowPos(0, 0), windowPosPivot(0, 0);
-		const ImVec2 progressBarSize = ImVec2(-1.0f, 18.0f);
+		const ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() + 5.0f);
 
 		if (tmpInputData.iPosition != WINDOW_POSITION::CUSTOM)
 		{
 			GetWindowPos(tmpInputData.iPosition, windowPos, windowPosPivot, 10.0f);
 			ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
 		}
-
-		//ImGui::SetNextWindowSize(ImVec2(180.0f * io.FontGlobalScale, 0.0f));
 		ImGui::SetNextWindowSize(ImVec2(200.0f, 0.0f));
 		ImGui::SetNextWindowBgAlpha(0.45f);
-		if (ImGui::Begin("EntityBars", nullptr, windowFlags))
+		if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
 		{
 			ImGui::SeparatorText("Basic stats");
 			int progress = ((int)io.MousePos.x % 100) + 1;
@@ -182,32 +239,41 @@ bool EntityBars::OnInitialize()
 		return false;
 	}
 
-	auto fnSetLockOn = utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), (char*)hExec, sizeExec.value_or(0));
+	auto fnSetLockOn = utility::PatternScan(SET_LOCKON_FN_SIG, sizeof(SET_LOCKON_FN_SIG), (char*)hExec, sizeExec.value_or(0));
 	if (fnSetLockOn == nullptr)
 	{
 		LOG_ERROR("Failed to find SetLockOn function signature");
 		return false;
 	}
 
-	if (utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), fnSetLockOn + 1, sizeExec.value_or(0)) != nullptr)
-	{
-		LOG_ERROR("Failed to find the unique function signature of SetLockOn");
-		return false;
-	}
+	//if (utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), fnSetLockOn + 1, sizeExec.value_or(0)) != nullptr)
+	//{
+	//	LOG_ERROR("Failed to find the unique function signature of SetLockOn");
+	//	return false;
+	//}
 
-	fnSetLockOn -= SET_LOCKON_FN_SIGNATURE_OFFSET;
-	
+	fnSetLockOn -= SET_LOCKON_FN_SIG_OFFSET;
+
 	pSetLockOnHook = std::make_unique<FunctionHook>(fnSetLockOn, &EntityBars::SetLockOn);
 	if (!pSetLockOnHook->Create())
 	{
 		return false;
 	}
 
+	bIsInitialized = true;
+
+	pThreadUpdateEntity = std::make_unique<std::jthread>(std::bind_front(&EntityBars::UpdateEntityData, this));
+
+	LOG_INFO("EntityBars initialized!");
+
 	return true;
 }
 
 void EntityBars::OnReset()
 {
+	if (!bIsInitialized)
+		return;
+
 	std::scoped_lock _{ inputData.mutex };
 	inputData.bEnableDrag = false;
 	inputData.iPosition = WINDOW_POSITION::CENTER_RIGHT;
@@ -215,6 +281,9 @@ void EntityBars::OnReset()
 
 bool EntityBars::OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (!bIsInitialized)
+		return true;
+
 	if (iMsg == WM_KEYDOWN)
 	{
 		switch (wParam)
@@ -249,5 +318,6 @@ bool EntityBars::OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		return false;
 		}
 	}
+
 	return !inputData.bEnableDrag;
 }

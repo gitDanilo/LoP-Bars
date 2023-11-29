@@ -1,6 +1,8 @@
 #pragma once
 
 #include <mutex>
+#include <thread>
+#include <chrono>
 #include "imgui.h"
 #include "ImGuiWindow.hpp"
 #include "utility/FunctionHook.hpp"
@@ -16,6 +18,58 @@ enum WINDOW_POSITION : int
 	BOTTOM_LEFT,
 	CENTER_LEFT,
 	CUSTOM
+};
+
+struct LOP_ENTITY_STATS
+{
+	int iHealth;
+	int iStamina;
+	int iStagger;
+	int iMaxHealth;
+	int iMaxStamina;
+	int iMaxStagger;
+};
+
+struct LOP_ENTITY_ABNORMAL_STATS
+{
+	float fFire;
+	float fAcid;
+	float fEletric;
+	float fMaxFire;
+	float fMaxAcid;
+	float fMaxEletric;
+};
+
+struct LOP_ENTITY_TIMERS
+{
+	float fCombat;
+	float fStagger;
+	float fMaxStagger;
+};
+
+struct LOP_ENTITY
+{
+	LOP_ENTITY_STATS stats;
+	LOP_ENTITY_ABNORMAL_STATS abnormalStats;
+	LOP_ENTITY_TIMERS timers;
+};
+
+struct MUTEX_LOP_ENTITY : LOP_ENTITY
+{
+	std::mutex mutex;
+	std::atomic<bool> bIsActive;
+
+	inline void SetData(LOP_ENTITY& entity)
+	{
+		std::scoped_lock _{ mutex };
+		memcpy(this, &entity, sizeof(LOP_ENTITY));
+	}
+
+	inline void GetData(LOP_ENTITY& entity)
+	{
+		std::scoped_lock _{ mutex };
+		memcpy(&entity, this, sizeof(LOP_ENTITY));
+	}
 };
 
 struct INPUT_DATA
@@ -36,7 +90,7 @@ struct MUTEX_INPUT_DATA : INPUT_DATA
 	}
 };
 
-static const short SET_LOCKON_FN_SIGNATURE[] = {
+static const short SET_LOCKON_FN_SIG[] = {
 	0x7F, 0x2C,                                       // jg 14DB60EAB
 	0x48, 0x89, 0xC1,                                 // mov rcx,rax
 	0x48, 0x8B, 0x42, 0x30,                           // mov rax,[rdx+30]
@@ -47,7 +101,7 @@ static const short SET_LOCKON_FN_SIGNATURE[] = {
 	0x21, 0x3D                                        // and [15742208D],edi
 };
 
-static const size_t SET_LOCKON_FN_SIGNATURE_OFFSET = 0x2D;
+static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x2D;
 
 class EntityBars : public ImGuiWindow
 {
@@ -59,9 +113,14 @@ public:
 	bool OnInitialize() override;
 	void OnReset() override;
 	bool OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) override;
-	static void WINAPI SetLockOn(void* unknown1, void* pLockOn, void* unknown2);
+	static void WINAPI SetLockOn(void* unknown1, char* pLockOn, void* unknown2);
+	void UpdateEntityData(std::stop_token stopToken);
 private:
+	bool bIsInitialized;
+	char* pLockOn;
+	std::unique_ptr<std::jthread> pThreadUpdateEntity;
 	std::unique_ptr<FunctionHook> pSetLockOnHook;
+	MUTEX_LOP_ENTITY lockedEntity;
 	MUTEX_INPUT_DATA inputData;
 	void GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVec2& windowPosPivot, const float PAD = 10.0f);
 };
