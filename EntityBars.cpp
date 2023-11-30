@@ -6,6 +6,38 @@
 
 static EntityBars* gEntityBars = nullptr;
 
+void ABNORMAL_STAT_LIST::GetElementalBuildup(float& fire, float& eletric, float& acid)
+{
+	fire = 0.0f;
+	eletric = 0.0f;
+	acid = 0.0f;
+
+	if (iNewSlot < 3)
+		return;
+
+	size_t last = 0x20 + ((iNewSlot - 2) * 0x10);
+	char iClass;
+
+	for (size_t i = 0x20; i < last; i += 0x10)
+	{
+		iClass = *(char*)(*(uintptr_t*)(*(uintptr_t*)(pList + i) + 0x8) + 0x84);
+		switch (iClass)
+		{
+		case 0x1:
+			fire = trunc(*(float*)(*(uintptr_t*)(pList + i) + 0x258));
+			continue;
+		case 0x2:
+			eletric = trunc(*(float*)(*(uintptr_t*)(pList + i) + 0x258));
+			continue;
+		case 0x3:
+			acid = trunc(*(float*)(*(uintptr_t*)(pList + i) + 0x258));
+			continue;
+		default:
+			continue;
+		}
+	}
+}
+
 EntityBars::EntityBars() : inputData(), bIsInitialized(false), pLockOnSystemData(nullptr), lockedEntity()
 {
 	gEntityBars = this;
@@ -108,7 +140,7 @@ void EntityBars::OnDraw()
 		return;
 
 	lockedEntity.pStatList = (char*)*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(lockedEntity.pBase + 0x848) + 0xE0) + 0x28);
-	lockedEntity.pAbnormalStatsList = (char*)*(uintptr_t*)(*(uintptr_t*)(lockedEntity.pBase + 0x850) + 0xD0);
+	lockedEntity.abnormalStatList = *(ABNORMAL_STAT_LIST*)(*(uintptr_t*)(lockedEntity.pBase + 0x850) + 0xD0);
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoSavedSettings |
@@ -167,10 +199,10 @@ void EntityBars::OnDraw()
 		{
 			// Stagger elapsed time
 			//fValue = *(float*)(lockedEntity.pBase + 0xF64); // Stagger elapsed time
-			fValue = *(float*)(lockedEntity.pBase + 0xF68); // Stagger retain time
+			fValue = *(float*)(lockedEntity.pBase + 0xF68); // Stagger duration time
 			fMaxValue = *(float*)(lockedEntity.pBase + 0xF60); // Stagger duration
 
-			sText = std::format("Stagger retain {0:.2f}s", (int)fValue);
+			sText = std::format("Stagger duration {}s", (int)fValue);
 			ImGui::ProgressBar(fValue / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.9f, 0.7f, 0.0f, 0.85f));
 		}
 		else
@@ -182,26 +214,35 @@ void EntityBars::OnDraw()
 
 		ImGui::SeparatorText("Elemental buildup");
 
-		fValue = 100.0f;
+		float fEletric, fAcid;
+		lockedEntity.abnormalStatList.GetElementalBuildup(fValue, fEletric, fAcid);
 
-		fMaxValue = *(int*)(lockedEntity.pStatList + 0x16BC);
+		fMaxValue = (float)*(int*)(lockedEntity.pStatList + 0x16BC);
 		sText = std::format("Fire ({}/{})", fValue, fMaxValue);
 		ImGui::ProgressBar(fValue / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.8f, 0.4f, 0.0f, 0.85f));
 
-		fMaxValue = *(int*)(lockedEntity.pStatList + 0x16EC);
-		sText = std::format("Acid ({}/{})", fValue, fMaxValue);
-		ImGui::ProgressBar(fValue / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
+		fMaxValue = (float)*(int*)(lockedEntity.pStatList + 0x16EC);
+		sText = std::format("Eletric ({}/{})", fEletric, fMaxValue);
+		ImGui::ProgressBar(fEletric / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.0f, 0.25f, 0.75f, 0.85f));
 
-		fMaxValue = *(int*)(lockedEntity.pStatList + 0x16BC);
-		sText = std::format("Eletric ({}/{})", fValue, fMaxValue);
-		ImGui::ProgressBar(fValue / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.0f, 0.25f, 0.75f, 0.85f));
+		fMaxValue = (float)*(int*)(lockedEntity.pStatList + 0x171C);
+		sText = std::format("Acid ({}/{})", fAcid, fMaxValue);
+		ImGui::ProgressBar(fAcid / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
 
-		ImGui::SeparatorText("Timers");
+		ImGui::SeparatorText("Equipment");
 
 		// Combat
 		fValue = *(float*)(lockedEntity.pBase + 0x1040);
-		sText = std::format("Combat: {0:.2f}s", fValue);
+		sText = std::format("Combat: {}s", fValue);
 		ImGui::Text(sText.c_str());
+
+		auto fnGetMaxDurability = (GetMaxDurability)0x141C235D0;
+		if (0 == 3)
+		{
+			int test = fnGetMaxDurability((void*)(0x13FE07158-0x308));
+			sText = std::format("MaxDurability: {}", test);
+			ImGui::Text(sText.c_str());
+		}
 	}
 	ImGui::End();
 }

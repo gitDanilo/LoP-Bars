@@ -20,40 +20,6 @@ enum WINDOW_POSITION : int
 	CUSTOM
 };
 
-struct LOP_ENTITY_STATS
-{
-	int iHealth;
-	int iStamina;
-	int iStagger;
-	int iMaxHealth;
-	int iMaxStamina;
-	int iMaxStagger;
-};
-
-struct LOP_ENTITY_ABNORMAL_STATS
-{
-	float fFire;
-	float fAcid;
-	float fEletric;
-	float fMaxFire;
-	float fMaxAcid;
-	float fMaxEletric;
-};
-
-struct LOP_ENTITY_TIMERS
-{
-	float fCombat;
-	float fStagger;
-	float fMaxStagger;
-};
-
-struct LOP_ENTITY
-{
-	LOP_ENTITY_STATS stats;
-	LOP_ENTITY_ABNORMAL_STATS abnormalStats;
-	LOP_ENTITY_TIMERS timers;
-};
-
 struct INPUT_DATA
 {
 	bool bShowWindow;
@@ -72,11 +38,19 @@ struct MUTEX_INPUT_DATA : INPUT_DATA
 	}
 };
 
+struct ABNORMAL_STAT_LIST
+{
+	char* pList;
+	int iNewSlot;
+
+	void GetElementalBuildup(float& fire, float& eletric, float& acid);
+};
+
 struct ENTITY_PTRS
 {
 	char* pBase;
 	char* pStatList;
-	char* pAbnormalStatsList;
+	ABNORMAL_STAT_LIST abnormalStatList;
 };
 
 static const short SET_LOCKON_FN_SIG[] = {
@@ -92,6 +66,8 @@ static const short SET_LOCKON_FN_SIG[] = {
 
 static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x2D;
 
+typedef int(__stdcall* GetMaxDurability)(void* pWeapon);
+
 class EntityBars : public ImGuiWindow
 {
 public:
@@ -101,7 +77,7 @@ public:
 	bool OnInitialize() override;
 	void OnReset() override;
 	bool OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) override;
-	static void WINAPI SetLockOnSystemData(void* unknown1, void* pLockOnSystemData, void* unknown2);
+	static void __stdcall SetLockOnSystemData(void* unknown1, void* pLockOnSystemData, void* unknown2);
 private:
 	bool bIsInitialized;
 	MUTEX_INPUT_DATA inputData;
