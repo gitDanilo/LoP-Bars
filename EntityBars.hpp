@@ -54,24 +54,6 @@ struct LOP_ENTITY
 	LOP_ENTITY_TIMERS timers;
 };
 
-struct MUTEX_LOP_ENTITY : LOP_ENTITY
-{
-	std::mutex mutex;
-	std::atomic<bool> bIsActive;
-
-	inline void SetData(LOP_ENTITY& entity)
-	{
-		std::scoped_lock _{ mutex };
-		memcpy(this, &entity, sizeof(LOP_ENTITY));
-	}
-
-	inline void GetData(LOP_ENTITY& entity)
-	{
-		std::scoped_lock _{ mutex };
-		memcpy(&entity, this, sizeof(LOP_ENTITY));
-	}
-};
-
 struct INPUT_DATA
 {
 	bool bShowWindow;
@@ -90,15 +72,22 @@ struct MUTEX_INPUT_DATA : INPUT_DATA
 	}
 };
 
+struct ENTITY_PTRS
+{
+	char* pBase;
+	char* pStatList;
+	char* pAbnormalStatsList;
+};
+
 static const short SET_LOCKON_FN_SIG[] = {
-	0x7F, 0x2C,                                       // jg 14DB60EAB
-	0x48, 0x89, 0xC1,                                 // mov rcx,rax
-	0x48, 0x8B, 0x42, 0x30,                           // mov rax,[rdx+30]
-	0x4C, 0x39, 0x04, 0xC8,                           // cmp [rax+rcx*8],r8
-	0x75, 0x1F,                                       // jne 14DB60EAB
-	0x48, 0x89, 0xBB, -1, -1, -1, -1,                 // mov [rbx+00000098],rdi
-	0x66, 0x8B, 0x3D, -1, -1, -1, -1,                 // mov di,[157F4D673]
-	0x21, 0x3D                                        // and [15742208D],edi
+	0x7F, 0x2C,                       // jg 14DB60EAB
+	0x48, 0x89, 0xC1,                 // mov rcx,rax
+	0x48, 0x8B, 0x42, 0x30,           // mov rax,[rdx+30]
+	0x4C, 0x39, 0x04, 0xC8,           // cmp [rax+rcx*8],r8
+	0x75, 0x1F,                       // jne 14DB60EAB
+	0x48, 0x89, 0xBB, -1, -1, -1, -1, // mov [rbx+00000098],rdi
+	0x66, 0x8B, 0x3D, -1, -1, -1, -1, // mov di,[157F4D673]
+	0x21, 0x3D                        // and [15742208D],edi
 };
 
 static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x2D;
@@ -112,14 +101,12 @@ public:
 	bool OnInitialize() override;
 	void OnReset() override;
 	bool OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) override;
-	static void WINAPI SetLockOn(void* unknown1, void* pLockOn, void* unknown2);
-	void UpdateEntityData(std::stop_token stopToken);
+	static void WINAPI SetLockOnSystemData(void* unknown1, void* pLockOnSystemData, void* unknown2);
 private:
 	bool bIsInitialized;
-	char* pLockOn;
-	std::unique_ptr<std::jthread> pThreadUpdateEntity;
-	std::unique_ptr<FunctionHook> pSetLockOnHook;
-	MUTEX_LOP_ENTITY lockedEntity;
 	MUTEX_INPUT_DATA inputData;
+	std::unique_ptr<FunctionHook> pSetLockOnHook;
+	char* pLockOnSystemData;
+	ENTITY_PTRS lockedEntity;
 	void GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVec2& windowPosPivot, const float PAD = 10.0f);
 };

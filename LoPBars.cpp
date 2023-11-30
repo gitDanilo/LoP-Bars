@@ -190,7 +190,7 @@ void LoPBars::SetImGuiStyle()
 	style.WindowMenuButtonPosition = ImGuiDir_None;
 
 	auto& colors = ImGui::GetStyle().Colors;
-	colors[ImGuiCol_FrameBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+	colors[ImGuiCol_FrameBg] = ImVec4(0.155f, 0.155f, 0.155f, 0.8f);
 }
 
 bool LoPBars::InitializeD3D12()
