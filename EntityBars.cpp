@@ -38,7 +38,7 @@ void ABNORMAL_STAT_LIST::GetElementalBuildup(float& fire, float& eletric, float&
 	}
 }
 
-EntityBars::EntityBars() : inputData(), bIsInitialized(false), pLockOnSystemData(nullptr), lockedEntity()
+EntityBars::EntityBars() : inputData(), bIsInitialized(false), pLockOnSystemData(nullptr), lockedEntity(), fnGetMaxDurability(nullptr)
 {
 	gEntityBars = this;
 	inputData.bShowWindow = true;
@@ -170,7 +170,7 @@ void EntityBars::OnDraw()
 	ImGui::SetNextWindowBgAlpha(0.45f);
 	if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
 	{
-		ImGui::SeparatorText("Basic stats");
+		ImGui::SeparatorText("Stats");
 
 		// Health
 		int iValue = *(int*)(lockedEntity.pStatList + 0xC);
@@ -212,7 +212,7 @@ void EntityBars::OnDraw()
 			ImGui::ProgressBar((float)iValue / (float)iMaxValue, progressBarSize, sText.c_str(), ImVec4(0.9f, 0.7f, 0.0f, 0.85f));
 		}
 
-		ImGui::SeparatorText("Elemental buildup");
+		ImGui::SeparatorText("Buildup");
 
 		float fEletric, fAcid;
 		lockedEntity.abnormalStatList.GetElementalBuildup(fValue, fEletric, fAcid);
@@ -229,19 +229,19 @@ void EntityBars::OnDraw()
 		sText = std::format("Acid ({}/{})", fAcid, fMaxValue);
 		ImGui::ProgressBar(fAcid / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
 
-		ImGui::SeparatorText("Equipment");
-
-		// Combat
-		fValue = *(float*)(lockedEntity.pBase + 0x1040);
-		sText = std::format("Combat: {}s", fValue);
-		ImGui::Text(sText.c_str());
-
-		auto fnGetMaxDurability = (GetMaxDurability)0x141C235D0;
-		if (0 == 3)
+		lockedEntity.weaponList = *(WEAPON_LIST*)(lockedEntity.pBase + 0xE0);
+		if (lockedEntity.weaponList.iWeaponCount > 0)
 		{
-			int test = fnGetMaxDurability((void*)(0x13FE07158-0x308));
-			sText = std::format("MaxDurability: {}", test);
-			ImGui::Text(sText.c_str());
+			ImGui::SeparatorText("Weapons");
+			char* pWeapon;
+			for (int i = 0; i < lockedEntity.weaponList.iWeaponCount; ++i)
+			{
+				pWeapon = (char*)*(uintptr_t*)(lockedEntity.weaponList.pList + (i * sizeof(void*)));
+				iValue = *(int*)(pWeapon + 0x308);
+				iMaxValue = fnGetMaxDurability(pWeapon);
+				sText = std::format("Durability ({}/{})", i + 1, iValue, iMaxValue);
+				ImGui::ProgressBar((float)iValue / (float)iMaxValue, progressBarSize, sText.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
+			}
 		}
 	}
 	ImGui::End();
@@ -265,23 +265,29 @@ bool EntityBars::OnInitialize()
 		return false;
 	}
 
-	auto fnSetLockOn = utility::PatternScan(SET_LOCKON_FN_SIG, sizeof(SET_LOCKON_FN_SIG), hExec, sizeExec.value_or(0));
-	if (fnSetLockOn == nullptr)
+	auto pFunction = utility::PatternScan(SET_LOCKON_FN_SIG, sizeof(SET_LOCKON_FN_SIG), hExec, sizeExec.value_or(0));
+	if (pFunction == nullptr)
 	{
 		LOG_ERROR("Failed to find SetLockOn function signature");
 		return false;
 	}
 
-	//if (utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), fnSetLockOn + 1, sizeExec.value_or(0)) != nullptr)
+	//if (utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), pFunction + 1, sizeExec.value_or(0)) != nullptr)
 	//{
 	//	LOG_ERROR("Failed to find the unique function signature of SetLockOn");
 	//	return false;
 	//}
 
-	fnSetLockOn -= SET_LOCKON_FN_SIG_OFFSET;
+	pFunction -= SET_LOCKON_FN_SIG_OFFSET;
 
-	pSetLockOnHook = std::make_unique<FunctionHook>(fnSetLockOn, &EntityBars::SetLockOnSystemData);
+	pSetLockOnHook = std::make_unique<FunctionHook>(pFunction, &EntityBars::SetLockOnSystemData);
 	if (!pSetLockOnHook->Create())
+	{
+		return false;
+	}
+
+	pFunction = utility::PatternScan(GET_MAX_DURABILITY_FN_SIG, sizeof(GET_MAX_DURABILITY_FN_SIG), hExec, sizeExec.value_or(0));
+	if (pFunction == nullptr)
 	{
 		return false;
 	}
@@ -310,8 +316,12 @@ bool EntityBars::OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	if (!bIsInitialized)
 		return true;
 
+	static bool isKeyboardInput = false;
+
 	if (iMsg == WM_KEYDOWN)
 	{
+		isKeyboardInput = true;
+
 		switch (wParam)
 		{
 		case VK_HOME:
@@ -319,7 +329,7 @@ bool EntityBars::OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			std::scoped_lock _{ inputData.mutex };
 			inputData.bShowWindow = !inputData.bShowWindow;
 		}
-		return false;
+		break;
 		case VK_END:
 		{
 			std::scoped_lock _{ inputData.mutex };
@@ -327,23 +337,23 @@ bool EntityBars::OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			if (inputData.bEnableDrag)
 				inputData.iPosition = WINDOW_POSITION::CUSTOM;
 		}
-		return false;
+		break;
 		case VK_PRIOR:
 		{
 			std::scoped_lock _{ inputData.mutex };
 			inputData.bEnableDrag = false;
 			inputData.iPosition = WINDOW_POSITION((inputData.iPosition + 1) % WINDOW_POSITION::CUSTOM);
 		}
-		return false;
+		break;
 		case VK_NEXT:
 		{
 			std::scoped_lock _{ inputData.mutex };
 			inputData.bEnableDrag = false;
 			inputData.iPosition = WINDOW_POSITION(inputData.iPosition == 0 ? WINDOW_POSITION::CUSTOM - 1 : inputData.iPosition - 1);
 		}
-		return false;
+		break;
 		}
 	}
 
-	return !inputData.bEnableDrag;
+	return isKeyboardInput || !inputData.bEnableDrag;
 }

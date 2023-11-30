@@ -46,11 +46,18 @@ struct ABNORMAL_STAT_LIST
 	void GetElementalBuildup(float& fire, float& eletric, float& acid);
 };
 
+struct WEAPON_LIST
+{
+	char* pList;
+	int iWeaponCount;
+};
+
 struct ENTITY_PTRS
 {
 	char* pBase;
 	char* pStatList;
 	ABNORMAL_STAT_LIST abnormalStatList;
+	WEAPON_LIST weaponList;
 };
 
 static const short SET_LOCKON_FN_SIG[] = {
@@ -65,6 +72,22 @@ static const short SET_LOCKON_FN_SIG[] = {
 };
 
 static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x2D;
+
+static const short GET_MAX_DURABILITY_FN_SIG[] = {
+	0x40, 0x57,                               // push rdi
+	0x48, 0x83, 0xEC, 0x20,                   // sub rsp,20
+	0x48, 0x8B, 0xB9, 0x38, 0x03, 0x00, 0x00, // mov rdi,[rcx+00000338]
+	0x48, 0x85, 0xFF,                         // test rdi,rdi
+	0x0F, 0x84, -1, -1, -1, -1,               // je LOP-Win64-Shipping.exe+D5C5F9D
+	0x48, 0x89, 0x5C, 0x24, 0x30,             // mov [rsp+30],rbx
+	0x48, 0x63, 0x5F, 0x50,                   // movsxd  rbx,dword ptr [rdi+50]
+	0xE8, -1, -1, -1, -1,                     // call LOP-Win64-Shipping.exe+1D4FD10
+	0x8B, 0x97, 0xD0, 0x00, 0x00, 0x00,       // mov edx,[rdi+000000D0]
+	0x48, 0x89, 0xC1,                         // mov rcx,rax
+	0xE8, -1, -1, -1, -1                      // call LOP-Win64-Shipping.exe+1CAD850
+};
+
+static const size_t GET_MAX_DURABILITY_OFFSET = 0x0;
 
 typedef int(__stdcall* GetMaxDurability)(void* pWeapon);
 
@@ -84,5 +107,6 @@ private:
 	std::unique_ptr<FunctionHook> pSetLockOnHook;
 	char* pLockOnSystemData;
 	ENTITY_PTRS lockedEntity;
+	GetMaxDurability fnGetMaxDurability;
 	void GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVec2& windowPosPivot, const float PAD = 10.0f);
 };
