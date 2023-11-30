@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <windows.h>
+#include "Memory.hpp"
 #include "PointerHook.hpp"
 #include "Log.hpp"
 
@@ -28,7 +29,7 @@ PointerHook::PointerHook(void** pOld, void* pNew)
 		throw std::invalid_argument("pOld cannot be nullptr");
 	}
 
-	if (IsBadReadPtr(pOld, sizeof(void*)))
+	if (utility::IsBadReadPtr(pOld))
 	{
 		LOG_ERROR("PointerHook: pOld is not readable");
 		throw std::invalid_argument("pOld is not readable");
@@ -51,7 +52,7 @@ PointerHook::~PointerHook()
 
 bool PointerHook::Remove()
 {
-	if (pReplace != nullptr && !IsBadReadPtr(pReplace, sizeof(void*)) && *pReplace == pDestination)
+	if (pReplace != nullptr && !utility::IsBadReadPtr(pReplace) && *pReplace == pDestination)
 	{
 		try
 		{
@@ -70,7 +71,7 @@ bool PointerHook::Remove()
 
 bool PointerHook::Restore()
 {
-	if (pReplace != nullptr && !IsBadReadPtr(pReplace, sizeof(void*)) && *pReplace != pDestination)
+	if (pReplace != nullptr && !utility::IsBadReadPtr(pReplace) && *pReplace != pDestination)
 	{
 		try
 		{

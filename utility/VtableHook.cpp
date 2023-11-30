@@ -1,5 +1,6 @@
 // Modified from https://github.com/praydog/REFramework source code
 
+#include "Memory.hpp"
 #include "VtableHook.hpp"
 
 VtableHook::VtableHook() : rawData(), pVtable(), pNewVtable(nullptr), pOldVtable(), sizeVtable(0)
@@ -67,7 +68,7 @@ bool VtableHook::Recreate()
 bool VtableHook::Remove()
 {
 	// Can cause issues where we set the vtable/random memory of some other pointer.
-	if (pVtable != nullptr && IsBadReadPtr(pVtable.Pointer(), sizeof(void*)) == FALSE && pVtable.To<void*>() == pNewVtable)
+	if (pVtable != nullptr && utility::IsBadReadPtr(pVtable.Pointer()) == FALSE && pVtable.To<void*>() == pNewVtable)
 	{
 		*pVtable.As<Address*>() = pOldVtable;
 		return true;
@@ -93,7 +94,7 @@ size_t VtableHook::GetVtableSize(Address vtable)
 
 	for (; vtable.As<Address*>()[i] != nullptr; ++i)
 	{
-		if (IsBadCodePtr(vtable.As<FARPROC*>()[i]) == TRUE)
+		if (utility::IsBadReadPtr(vtable.As<FARPROC*>()[i]) == TRUE)
 		{
 			break;
 		}

@@ -32,28 +32,28 @@ EntityBars::~EntityBars()
 	gEntityBars = nullptr;
 }
 
-void EntityBars::SetLockOn(void* unknown1, char* pLockOn, void* unknown2)
+void EntityBars::SetLockOn(void* unknown1, void* pLockOn, void* unknown2)
 {
-	LOG_INFO("SetLockOn called with: " << std::hex << unknown1 << ", " << (void*)pLockOn << ", " << unknown2);
+	LOG_INFO("SetLockOn called with: " << std::hex << unknown1 << ", " << pLockOn << ", " << unknown2);
 
 	auto fnSetLockOn = gEntityBars->pSetLockOnHook->GetOriginal<decltype(EntityBars::SetLockOn)>();
 
-	gEntityBars->pLockOn = pLockOn;
+	gEntityBars->pLockOn = (char*)pLockOn;
 
 	fnSetLockOn(unknown1, pLockOn, unknown2);
 }
 
-#define POOLING_INTERVAL 1000ms
-#define PTR (p, o) (char*)p[o]
+#define POOLING_INTERVAL 200ms
+
 void EntityBars::UpdateEntityData(std::stop_token stopToken)
 {
 	LOP_ENTITY tmpEntity = { };
-	char* pEntityBase = nullptr;
-	char* pLastEntityBase = nullptr;
-	char* pTmp = nullptr;
+	void* pEntityBase = nullptr;
+	void* pLastEntityBase = nullptr;
+	void* pTmp = nullptr;
 	bool bKeepMaxValues = false;
 
-	int test = 0;
+	int* test = nullptr;
 
 	do
 	{
@@ -63,7 +63,8 @@ void EntityBars::UpdateEntityData(std::stop_token stopToken)
 			continue;
 		}
 
-		pEntityBase = (char*)(*(int64_t*)(pLockOn + 0x200));
+		pEntityBase = (void*)*utility::GoodPtrOrNull(pLockOn + 0x200);
+		pLastEntityBase = utility::IsBadReadPtr(pLastEntityBase) ? nullptr : pLastEntityBase;
 
 		if (pEntityBase == nullptr && pLastEntityBase == nullptr)
 		{
@@ -75,9 +76,9 @@ void EntityBars::UpdateEntityData(std::stop_token stopToken)
 		pEntityBase = pEntityBase == nullptr ? pLastEntityBase : pEntityBase;
 		bKeepMaxValues = pEntityBase == pLastEntityBase;
 
-		test = *(int*)(*(int64_t*)(*(int64_t*)((*(int64_t*)(pEntityBase + 0x848)) + 0xE0) + 0x28) + 0xC);
-
-		LOG_INFO("Health: " << std::dec << test);
+		test = (int*)utility::ReadMultiLvlPtr(pEntityBase, { 0x848, 0xE0, 0x28, 0xC });
+		//test = *(int*)(*(int64_t*)(*(int64_t*)((*(int64_t*)(pEntityBase + 0x848)) + 0xE0) + 0x28) + 0xC);
+		LOG_INFO("Health: " << std::dec << (test != nullptr ? *test : -1));
 
 		pLastEntityBase = pEntityBase;
 		std::this_thread::sleep_for(POOLING_INTERVAL);
@@ -152,73 +153,66 @@ void EntityBars::OnDraw()
 	static INPUT_DATA tmpInputData = { 0 };
 	inputData.GetData(tmpInputData);
 
-	if (tmpInputData.bShowWindow)
+	if (!tmpInputData.bShowWindow || pLockOn == nullptr)
+		return;
+
+	char* pEntityBase = (char*)*(uintptr_t*)(pLockOn + 0x200);
+	if (pEntityBase == nullptr)
+		return;
+
+	auto& io = ImGui::GetIO();
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing |
+		ImGuiWindowFlags_NoNav;
+
+	if (!tmpInputData.bEnableDrag)
+		windowFlags = windowFlags | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
+	else
+		ImGui::SetNextWindowFocus();
+
+	io.MouseDrawCursor = tmpInputData.bEnableDrag;
+
+	const auto PAD = 10.0f;
+	ImVec2 windowPos(0, 0), windowPosPivot(0, 0);
+	const ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() + 5.0f);
+
+	if (tmpInputData.iPosition != WINDOW_POSITION::CUSTOM)
 	{
-		auto& style = ImGui::GetStyle();
-		style.WindowRounding = 4.0f;
-		style.ChildRounding = 2.0f;
-		style.PopupRounding = 2.0f;
-		style.FrameRounding = 2.0f;
-		style.ScrollbarRounding = 2.0f;
-		style.SelectableTextAlign = ImVec2(0.5f, 0.5f);
-		style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
-		style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-		style.SeparatorTextAlign = ImVec2(0.5f, 0.5f);
-
-		auto& colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_FrameBg] = ImVec4(0.255f, 0.255f, 0.255f, 0.8f);
-
-		auto& io = ImGui::GetIO();
-
-		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoSavedSettings |
-			ImGuiWindowFlags_NoFocusOnAppearing |
-			ImGuiWindowFlags_NoNav;
-
-		if (!tmpInputData.bEnableDrag)
-			windowFlags = windowFlags | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
-		else
-			ImGui::SetNextWindowFocus();
-
-		io.MouseDrawCursor = tmpInputData.bEnableDrag;
-
-		const auto PAD = 10.0f;
-		ImVec2 windowPos(0, 0), windowPosPivot(0, 0);
-		const ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() + 5.0f);
-
-		if (tmpInputData.iPosition != WINDOW_POSITION::CUSTOM)
-		{
-			GetWindowPos(tmpInputData.iPosition, windowPos, windowPosPivot, 10.0f);
-			ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
-		}
-		ImGui::SetNextWindowSize(ImVec2(200.0f, 0.0f));
-		ImGui::SetNextWindowBgAlpha(0.45f);
-		if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
-		{
-			ImGui::SeparatorText("Basic stats");
-			int progress = ((int)io.MousePos.x % 100) + 1;
-			std::string sHealth = std::format("Health ({}/100)", progress);
-			ImGui::ProgressBar(progress / 100.0f, progressBarSize, sHealth.c_str(), ImVec4(0.35f, 0.0f, 0.0f, 0.85f));
-			progress = ((int)io.MousePos.y % 100) + 1;
-			std::string sStamina = std::format("Stamina ({}/100)", progress);
-			ImGui::ProgressBar(progress / 100.0f, progressBarSize, sStamina.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
-			ImGui::ProgressBar(0.9f, progressBarSize, "Stagger (90/100)", ImVec4(0.9f, 0.7f, 0.0f, 0.85f));
-
-			ImGui::SeparatorText("Elemental buildup");
-			ImGui::ProgressBar(0.3f, progressBarSize, "Fire (30/100)", ImVec4(0.8f, 0.4f, 0.0f, 0.85f));
-			ImGui::ProgressBar(0.5f, progressBarSize, "Acid (50/100)", ImVec4(0.45f, 0.735f, 0.045f, 0.85f));
-			ImGui::ProgressBar(0.9f, progressBarSize, "Eletric (90/100)", ImVec4(0.0f, 0.25f, 0.75f, 0.85f));
-
-			//ImGui::SeparatorText("Weapons health");
-			//ImGui::ProgressBar(0.3f, progressBarSize, "Weapon 1 (30/100)");
-			//ImGui::ProgressBar(0.5f, progressBarSize, "Weapon 2 (50/100)");
-
-			ImGui::SeparatorText("Timers");
-			ImGui::Text("Combat: 10s");
-			ImGui::ProgressBar(1.0f, progressBarSize, "Stagger 12s", ImVec4(0.45f, 0.0f, 0.5f, 0.85f));
-		}
-		ImGui::End();
+		GetWindowPos(tmpInputData.iPosition, windowPos, windowPosPivot, 10.0f);
+		ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
 	}
+	ImGui::SetNextWindowSize(ImVec2(200.0f, 0.0f));
+	ImGui::SetNextWindowBgAlpha(0.45f);
+	if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
+	{
+		ImGui::SeparatorText("Basic stats");
+
+		int test = *(int*)(*(uintptr_t*)(*(uintptr_t*)((*(uintptr_t*)(pEntityBase + 0x848)) + 0xE0) + 0x28) + 0xC);
+		int test2 = *(int*)(*(uintptr_t*)(*(uintptr_t*)((*(uintptr_t*)(pEntityBase + 0x848)) + 0xE0) + 0x28) + 0xD2C);
+		std::string sHealth = std::format("Health ({}/{})", test, test2);
+		ImGui::ProgressBar((float)test / (float)test2, progressBarSize, sHealth.c_str(), ImVec4(0.35f, 0.0f, 0.0f, 0.85f));
+
+		int progress = ((int)io.MousePos.y % 100) + 1;
+		std::string sStamina = std::format("Stamina ({}/100)", progress);
+		ImGui::ProgressBar(progress / 100.0f, progressBarSize, sStamina.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
+		ImGui::ProgressBar(0.9f, progressBarSize, "Stagger (90/100)", ImVec4(0.9f, 0.7f, 0.0f, 0.85f));
+
+		ImGui::SeparatorText("Elemental buildup");
+		ImGui::ProgressBar(0.3f, progressBarSize, "Fire (30/100)", ImVec4(0.8f, 0.4f, 0.0f, 0.85f));
+		ImGui::ProgressBar(0.5f, progressBarSize, "Acid (50/100)", ImVec4(0.45f, 0.735f, 0.045f, 0.85f));
+		ImGui::ProgressBar(0.9f, progressBarSize, "Eletric (90/100)", ImVec4(0.0f, 0.25f, 0.75f, 0.85f));
+
+		//ImGui::SeparatorText("Weapons health");
+		//ImGui::ProgressBar(0.3f, progressBarSize, "Weapon 1 (30/100)");
+		//ImGui::ProgressBar(0.5f, progressBarSize, "Weapon 2 (50/100)");
+
+		ImGui::SeparatorText("Timers");
+		ImGui::Text("Combat: 10s");
+		ImGui::ProgressBar(1.0f, progressBarSize, "Stagger 12s", ImVec4(0.45f, 0.0f, 0.5f, 0.85f));
+	}
+	ImGui::End();
 }
 
 bool EntityBars::OnInitialize()
@@ -239,7 +233,7 @@ bool EntityBars::OnInitialize()
 		return false;
 	}
 
-	auto fnSetLockOn = utility::PatternScan(SET_LOCKON_FN_SIG, sizeof(SET_LOCKON_FN_SIG), (char*)hExec, sizeExec.value_or(0));
+	auto fnSetLockOn = utility::PatternScan(SET_LOCKON_FN_SIG, sizeof(SET_LOCKON_FN_SIG), hExec, sizeExec.value_or(0));
 	if (fnSetLockOn == nullptr)
 	{
 		LOG_ERROR("Failed to find SetLockOn function signature");
@@ -262,7 +256,7 @@ bool EntityBars::OnInitialize()
 
 	bIsInitialized = true;
 
-	pThreadUpdateEntity = std::make_unique<std::jthread>(std::bind_front(&EntityBars::UpdateEntityData, this));
+	//pThreadUpdateEntity = std::make_unique<std::jthread>(std::bind_front(&EntityBars::UpdateEntityData, this));
 
 	LOG_INFO("EntityBars initialized!");
 

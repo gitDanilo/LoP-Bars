@@ -6,6 +6,7 @@
 #include "utility/Log.hpp"
 #include "utility/Thread.hpp"
 #include "utility/Module.hpp"
+#include "utility/Memory.hpp"
 #include "WindowFilter.hpp"
 #include "D3D12Hook.hpp"
 
@@ -250,7 +251,7 @@ bool D3D12Hook::Hook()
 		const auto base = (uintptr_t)pSwapChain1 + i;
 
 		// reached the end
-		if (IsBadReadPtr((void*)base, sizeof(void*)))
+		if (utility::IsBadReadPtr((void*)base))
 		{
 			break;
 		}

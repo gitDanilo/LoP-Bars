@@ -108,12 +108,11 @@ class EntityBars : public ImGuiWindow
 public:
 	EntityBars();
 	~EntityBars() override;
-	// Inherited via ImGuiWindow
 	void OnDraw() override;
 	bool OnInitialize() override;
 	void OnReset() override;
 	bool OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) override;
-	static void WINAPI SetLockOn(void* unknown1, char* pLockOn, void* unknown2);
+	static void WINAPI SetLockOn(void* unknown1, void* pLockOn, void* unknown2);
 	void UpdateEntityData(std::stop_token stopToken);
 private:
 	bool bIsInitialized;
