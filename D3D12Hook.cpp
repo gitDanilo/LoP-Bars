@@ -245,18 +245,18 @@ bool D3D12Hook::Hook()
 
 	LOG_INFO("Finding CommandQueue offset...");
 
-	// Find the command queue offset in the swapchain
-	for (auto i = 0; i < 512 * sizeof(void*); i += sizeof(void*))
+	// Find the command queue offset in the SwapChain
+	constexpr uintptr_t MAX_PTRS_OFFSET = 512 * sizeof(void*);
+	uintptr_t baseAddr;
+
+	for (uintptr_t i = 0; i < MAX_PTRS_OFFSET; i += sizeof(void*))
 	{
-		const auto base = (uintptr_t)pSwapChain1 + i;
+		baseAddr = (uintptr_t)pSwapChain1 + i;
 
-		// reached the end
-		if (utility::IsBadReadPtr((void*)base))
-		{
+		if (utility::IsBadReadPtr((void*)baseAddr))
 			break;
-		}
 
-		auto data = *(ID3D12CommandQueue**)base;
+		auto data = *(ID3D12CommandQueue**)baseAddr;
 
 		if (data == pCommandQueue)
 		{
@@ -268,8 +268,50 @@ bool D3D12Hook::Hook()
 
 	if (dwCommandQueueOffset == 0)
 	{
-		LOG_ERROR("Failed to find CommandQueue offset");
-		return false;
+		LOG_WARNING("Failed to find CommandQueue offset in the first scan. Retrying...");
+
+		uintptr_t highBaseAddr, cmdBaseAddr;
+
+		for (uintptr_t i = 0; i < MAX_PTRS_OFFSET; i += sizeof(void*))
+		{
+			baseAddr = (uintptr_t)pSwapChain1 + i;
+
+			if (utility::IsBadReadPtr((void*)baseAddr))
+				break;
+
+			highBaseAddr = *(uintptr_t*)baseAddr;
+
+			if (highBaseAddr == 0 || utility::IsBadReadPtr((void*)highBaseAddr))
+				continue;
+
+			for (uintptr_t j = 0; j < MAX_PTRS_OFFSET; j += sizeof(void*))
+			{
+				cmdBaseAddr = highBaseAddr + j;
+
+				if (utility::IsBadReadPtr((void*)cmdBaseAddr))
+					break;
+
+				auto data = *(ID3D12CommandQueue**)cmdBaseAddr;
+
+				if (data == pCommandQueue)
+				{
+					dwCommandQueueOffset = j;
+					dwProtonSwapChainOffset = i;
+					bIsProtonSwapChain = true;
+					LOG_INFO("Found Proton SwapChain and CommandQueue offset: " << i << ", " << j);
+					break;
+				}
+			}
+
+			if (bIsProtonSwapChain)
+				break;
+		}
+
+		if (dwCommandQueueOffset == 0)
+		{
+			LOG_ERROR("Failed to find CommandQueue offset");
+			return false;
+		}
 	}
 
 	utility::ThreadSuspender threadSuspender;
@@ -338,10 +380,12 @@ bool D3D12Hook::Unhook()
 	renderWidth = 0;
 	renderHeight = 0;
 	dwCommandQueueOffset = 0;
+	dwProtonSwapChainOffset = 0;
 	bIsHooked = false;
 	bIsPhase1 = true;
 	bIsInsidePresent = false;
 	bIgnoreNextPresent = false;
+	bIsProtonSwapChain = false;
 
 	return true;
 }
@@ -389,7 +433,15 @@ HRESULT WINAPI D3D12Hook::Present(IDXGISwapChain3* pSwapChain, UINT dwSyncInterv
 
 	if (hkD3D12.pDevice != nullptr)
 	{
-		hkD3D12.pCommandQueue = *(ID3D12CommandQueue**)((uintptr_t)pSwapChain + hkD3D12.dwCommandQueueOffset);
+		if (hkD3D12.bIsProtonSwapChain)
+		{
+			auto protonSwapChain = *(uintptr_t*)((uintptr_t)pSwapChain + hkD3D12.dwProtonSwapChainOffset);
+			hkD3D12.pCommandQueue = *(ID3D12CommandQueue**)(protonSwapChain + hkD3D12.dwCommandQueueOffset);
+		}
+		else
+		{
+			hkD3D12.pCommandQueue = *(ID3D12CommandQueue**)((uintptr_t)pSwapChain + hkD3D12.dwCommandQueueOffset);
+		}
 	}
 
 	if (hkD3D12.pSwapChain0 == nullptr)
@@ -410,7 +462,7 @@ HRESULT WINAPI D3D12Hook::Present(IDXGISwapChain3* pSwapChain, UINT dwSyncInterv
 
 		if (aobOriginal)
 		{
-			ProtectionOverride protectionOverride (fnPresent, aobOriginal->size(), PAGE_EXECUTE_READWRITE);
+			ProtectionOverride protectionOverride(fnPresent, aobOriginal->size(), PAGE_EXECUTE_READWRITE);
 
 			memcpy(fnPresent, aobOriginal->data(), aobOriginal->size());
 
@@ -494,7 +546,7 @@ HRESULT WINAPI D3D12Hook::ResizeBuffers(IDXGISwapChain3* pSwapChain, UINT Buffer
 
 		if (aobOriginal)
 		{
-			ProtectionOverride protection_override (fnResizeBuffers, aobOriginal->size(), PAGE_EXECUTE_READWRITE);
+			ProtectionOverride protection_override(fnResizeBuffers, aobOriginal->size(), PAGE_EXECUTE_READWRITE);
 
 			memcpy(fnResizeBuffers, aobOriginal->data(), aobOriginal->size());
 
@@ -565,7 +617,7 @@ HRESULT WINAPI D3D12Hook::ResizeTarget(IDXGISwapChain3* pSwapChain, const DXGI_M
 
 		if (aobOriginal)
 		{
-			ProtectionOverride protectionOverride (fnResizeTarget, aobOriginal->size(), PAGE_EXECUTE_READWRITE);
+			ProtectionOverride protectionOverride(fnResizeTarget, aobOriginal->size(), PAGE_EXECUTE_READWRITE);
 
 			memcpy(fnResizeTarget, aobOriginal->data(), aobOriginal->size());
 

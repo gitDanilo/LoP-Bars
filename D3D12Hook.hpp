@@ -64,11 +64,13 @@ private:
 	UINT renderHeight = 0;
 
 	uint32_t dwCommandQueueOffset = 0;
+	uint32_t dwProtonSwapChainOffset = 0;
 
 	bool bIsHooked = false;
 	bool bIsPhase1 = true;
 	bool bIsInsidePresent = false;
 	bool bIgnoreNextPresent = false;
+	bool bIsProtonSwapChain = false;
 
 	std::unique_ptr<PointerHook> pPresentPtrHook;
 	std::unique_ptr<VtableHook> pSwapChainVTableHook;
