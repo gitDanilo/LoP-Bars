@@ -4,7 +4,7 @@
 #include <tlhelp32.h>
 #include "LoPBars.hpp"
 
-#define PROXY_DLL L"XInput1_3.dll"
+#define PROXY_DLL L"XInput1_4.dll"
 
 static HMODULE gProxyLib = NULL;
 
@@ -71,22 +71,23 @@ extern "C"
 	}
 
 	// XInput 1.4 functions
-	//DWORD WINAPI XInputGetAudioDeviceIds(DWORD dwUserIndex, PVOID pRenderDeviceId, PVOID pRenderCount, PVOID pCaptureDeviceId, PVOID pCaptureCount)
-	//{
-	//    return reinterpret_cast<decltype(XInputGetAudioDeviceIds)*>(GetProcAddress(gProxyLib, "XInputGetAudioDeviceIds"))(dwUserIndex, pRenderDeviceId, pRenderCount, pCaptureDeviceId, pCaptureCount);
-	//}
+	DWORD WINAPI XInputGetAudioDeviceIds(DWORD dwUserIndex, PVOID pRenderDeviceId, PVOID pRenderCount, PVOID pCaptureDeviceId, PVOID pCaptureCount)
+	{
+	    //return reinterpret_cast<decltype(XInputGetAudioDeviceIds)*>(GetProcAddress(gProxyLib, "XInputGetAudioDeviceIds"))(dwUserIndex, pRenderDeviceId, pRenderCount, pCaptureDeviceId, pCaptureCount);
+	    return reinterpret_cast<decltype(XInputGetAudioDeviceIds)*>(GetProcAddress(gProxyLib, reinterpret_cast<LPCSTR>(10)))(dwUserIndex, pRenderDeviceId, pRenderCount, pCaptureDeviceId, pCaptureCount);
+	}
 
-	//DWORD WINAPI XInputGetBaseBusInformation(DWORD dwUserIndex, PVOID pBusInfo)
-	//{
-	//    return reinterpret_cast<decltype(XInputGetBaseBusInformation)*>(GetProcAddress(gProxyLib, "XInputGetBaseBusInformation"))(dwUserIndex, pBusInfo);
-	//    return reinterpret_cast<decltype(XInputGetBaseBusInformation)*>(GetProcAddress(gProxyLib, reinterpret_cast<LPCSTR>(104)))(dwUserIndex, pBusInfo);
-	//}
+	DWORD WINAPI XInputGetBaseBusInformation(DWORD dwUserIndex, PVOID pBusInfo)
+	{
+	    //return reinterpret_cast<decltype(XInputGetBaseBusInformation)*>(GetProcAddress(gProxyLib, "XInputGetBaseBusInformation"))(dwUserIndex, pBusInfo);
+	    return reinterpret_cast<decltype(XInputGetBaseBusInformation)*>(GetProcAddress(gProxyLib, reinterpret_cast<LPCSTR>(104)))(dwUserIndex, pBusInfo);
+	}
 
-	//DWORD WINAPI XInputGetCapabilitiesEx(DWORD dwUnk, DWORD dwUserIndex, DWORD dwFlags, PVOID pCapabilities)
-	//{
-	//    return reinterpret_cast<decltype(XInputGetCapabilitiesEx)*>(GetProcAddress(gProxyLib, "XInputGetCapabilitiesEx"))(dwUnk, dwUserIndex, dwFlags, pCapabilities);
-	//    return reinterpret_cast<decltype(XInputGetCapabilitiesEx)*>(GetProcAddress(gProxyLib, reinterpret_cast<LPCSTR>(108)))(dwUnk, dwUserIndex, dwFlags, pCapabilities);
-	//}
+	DWORD WINAPI XInputGetCapabilitiesEx(DWORD dwUnk, DWORD dwUserIndex, DWORD dwFlags, PVOID pCapabilities)
+	{
+	    //return reinterpret_cast<decltype(XInputGetCapabilitiesEx)*>(GetProcAddress(gProxyLib, "XInputGetCapabilitiesEx"))(dwUnk, dwUserIndex, dwFlags, pCapabilities);
+	    return reinterpret_cast<decltype(XInputGetCapabilitiesEx)*>(GetProcAddress(gProxyLib, reinterpret_cast<LPCSTR>(108)))(dwUnk, dwUserIndex, dwFlags, pCapabilities);
+	}
 }
 
 static DWORD WINAPI InitializeProxy(LPVOID lpThreadParameter)

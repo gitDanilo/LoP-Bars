@@ -232,21 +232,24 @@ void EntityBars::OnDraw()
 	if (target.pBase == nullptr)
 		return;
 
-	// Check if entity has any basic stats. If don't, then skip.
+	// Check if entity has any basic stats. If don't, then skip
 	uintptr_t ptr = *(uintptr_t*)(target.pBase + 0x848);
 	if (utility::IsBadReadPtr((void*)ptr))
 		return;
 
 	target.pStatList = (char*)*(uintptr_t*)(*(uintptr_t*)(ptr + 0xE0) + 0x28);
 
-	// Check if entity has any abnormal stats.
+	// Check if entity has any abnormal stats
 	ptr = *(uintptr_t*)(target.pBase + 0x850);
 	if (utility::IsBadReadPtr((void*)ptr))
 		target.abnormalStatList.iSize = -1;
 	else
 		target.abnormalStatList = *(LIST_DATA*)(ptr + 0xD0);
 
+	// Check if weapon list is valid
 	target.weaponList = *(LIST_DATA*)(target.pBase + 0xE0);
+	if (utility::IsBadReadPtr(target.weaponList.pList))
+		target.weaponList.iSize = -1;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 

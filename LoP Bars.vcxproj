@@ -102,7 +102,7 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);$(MSBuildProjectDirectory)\imgui;d3d12.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_3.dll</Command>
+      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_4.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,7 +129,7 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);$(MSBuildProjectDirectory)\imgui;d3d12.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_3.dll</Command>
+      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_4.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,7 +152,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_3.dll</Command>
+      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_4.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -179,7 +179,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_3.dll</Command>
+      <Command>InstallDLL.bat $(PlatformTarget) $(ConfigurationName) $(TargetFileName) xinput1_4.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
