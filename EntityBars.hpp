@@ -1,5 +1,7 @@
 #pragma once
 
+#define NOMINMAX
+
 #include <mutex>
 #include <thread>
 #include <chrono>
@@ -7,60 +9,86 @@
 #include "ImGuiWindow.hpp"
 #include "utility/FunctionHook.hpp"
 
-enum WINDOW_POSITION : int
-{
-	TOP_LEFT = 0,
-	TOP_CENTER,
-	TOP_RIGHT,
-	CENTER_RIGHT,
-	BOTTOM_RIGHT,
-	BOTTOM_CENTER,
-	BOTTOM_LEFT,
-	CENTER_LEFT,
-	CUSTOM
-};
+using namespace std::string_view_literals;
 
-struct INPUT_DATA
+struct WND_CONTEXT
 {
 	bool bShowWindow;
 	bool bEnableDrag;
-	WINDOW_POSITION iPosition;
+	bool bCustomPosition;
 };
 
-struct MUTEX_INPUT_DATA : INPUT_DATA
+struct MUTEX_WND_CONTEXT : WND_CONTEXT
 {
 	std::mutex mutex;
 
-	inline void GetData(INPUT_DATA& inputData)
+	inline void GetData(WND_CONTEXT& context)
 	{
 		std::scoped_lock _{ mutex };
-		memcpy(&inputData, this, sizeof(INPUT_DATA));
+		memcpy(&context, this, sizeof(WND_CONTEXT));
 	}
 };
 
-struct ABNORMAL_STAT_LIST
+// --------------------------------ELEMENTAL BUILDUP---------------------------------------
+enum E_TYPE : char
 {
-	char* pList;
-	int iNewSlot;
-
-	void GetElementalBuildup(float& fire, float& eletric, float& acid);
+	UNKNOWN = 0,
+	FIRE,
+	ELETRIC,
+	ACID,
+	COUNT,
 };
 
-struct WEAPON_LIST
+// Elements Max resist offset from StatList
+static const unsigned int E_RESIST_OFFSET[] =
+{
+	0xFFFFFFFF, // Unknown
+	0x16BC, // Fire
+	0x16EC, // Eletric
+	0x171C, // Acid
+};
+
+static const ImVec4 E_COLOR[] =
+{
+	ImVec4(0.0f, 0.0f, 0.0f, 0.0f), // Unknown
+	ImVec4(0.8f, 0.4f, 0.0f, 1.0f), // Fire
+	ImVec4(0.0f, 0.3f, 0.8f, 1.0f), // Eletric
+	ImVec4(0.0f, 0.5f, 0.4f, 1.0f), // Acid
+};
+
+static const std::string_view E_NAME[] =
+{
+	"Unknown"sv,
+	"Fire"sv,
+	"Eletric"sv,
+	"Acid"sv,
+};
+
+struct E_BAR
+{
+	float fValues[2];
+	const char* sBarText;
+};
+
+static E_BAR E_BAR_LIST[E_TYPE::COUNT] = { 0 };
+// ----------------------------------------------------------------------------------------
+
+struct LIST_DATA
 {
 	char* pList;
-	int iWeaponCount;
+	int iSize;
 };
 
 struct ENTITY_PTRS
 {
 	char* pBase;
 	char* pStatList;
-	ABNORMAL_STAT_LIST abnormalStatList;
-	WEAPON_LIST weaponList;
+	LIST_DATA abnormalStatList;
+	LIST_DATA weaponList;
 };
 
-static const short SET_LOCKON_FN_SIG[] = {
+static const short SET_LOCKON_FN_SIG[] =
+{
 	0x7F, 0x2C,                       // jg 14DB60EAB
 	0x48, 0x89, 0xC1,                 // mov rcx,rax
 	0x48, 0x8B, 0x42, 0x30,           // mov rax,[rdx+30]
@@ -73,7 +101,8 @@ static const short SET_LOCKON_FN_SIG[] = {
 
 static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x2D;
 
-static const short GET_MAX_DURABILITY_FN_SIG[] = {
+static const short GET_MAX_DURABILITY_FN_SIG[] =
+{
 	0x40, 0x57,                               // push rdi
 	0x48, 0x83, 0xEC, 0x20,                   // sub rsp,20
 	0x48, 0x8B, 0xB9, 0x38, 0x03, 0x00, 0x00, // mov rdi,[rcx+00000338]
@@ -103,10 +132,14 @@ public:
 	static void __stdcall SetLockOnSystemData(void* unknown1, void* pLockOnSystemData, void* unknown2);
 private:
 	bool bIsInitialized;
-	MUTEX_INPUT_DATA inputData;
+	MUTEX_WND_CONTEXT context;
+
 	std::unique_ptr<FunctionHook> pSetLockOnHook;
 	char* pLockOnSystemData;
-	ENTITY_PTRS lockedEntity;
+	ENTITY_PTRS target;
 	GetMaxDurability fnGetMaxDurability;
-	void GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVec2& windowPosPivot, const float PAD = 10.0f);
+
+	inline void ShowBasicStats(int iValues[], float fValues[], const ImVec2& progressBarSize);
+	inline void ShowElementalBuildup(const ImVec2& progressBarSize);
+	inline void ShowWeaponsDurability(int iValues[], const ImVec2& progressBarSize);
 };

@@ -7,8 +7,8 @@ class ImGuiWindow
 {
 public:
 	virtual ~ImGuiWindow() {};
-	virtual void OnDraw() = 0;
 	virtual bool OnInitialize() = 0;
 	virtual void OnReset() = 0;
+	virtual void OnDraw() = 0;
 	virtual bool OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) = 0;
 };

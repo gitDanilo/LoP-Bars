@@ -4,22 +4,36 @@
 #include <imgui_impl_dx12.h>
 #include "utility/Log.hpp"
 #include "EntityBars.hpp"
+#include "Splash.hpp"
+#include "ConfigManager.hpp"
 
 LoPBars::LoPBars() : iD3D12(), hWnd(0), bIsInitialized(false), initAttemptCount(0)
 {
-	std::scoped_lock _{ mtxStartup };
 	LOG_INFO("LoP Bars is initializing...");
 
+	ConfigManager::GetInstance().LoadData();
+
+	imGuiWindows.push_back(std::make_unique<Splash>());
 	imGuiWindows.push_back(std::make_unique<EntityBars>());
 
 	for (auto& wnd : imGuiWindows)
-		wnd->OnInitialize();
+	{
+		if (!wnd->OnInitialize())
+		{
+			LOG_ERROR("Failed to initialize");
+			throw std::exception("Failed to initialize due to an incompatible version of the game. Check for an update.");
+		}
+	}
 
 	if (!HookD3D12())
 	{
-		LOG_ERROR("Failed to hook D3D12");
-		MessageBox(0, L"LoP Bars failed to hook D3D12.", L"LoP Bars", MB_OK | MB_ICONERROR);
-		return;
+		LOG_ERROR("Failed to hook D3D12. Retrying in 3 seconds...");
+		Sleep(3000);
+		if (!HookD3D12())
+		{
+			LOG_ERROR("Failed to hook D3D12.");
+			throw std::exception("Failed to hook D3D12. This could be a conflict with another active overlay.");
+		}
 	}
 
 	LOG_INFO("D3D12 hooked!");
@@ -29,27 +43,7 @@ LoPBars::~LoPBars()
 {
 	LOG_INFO("Destroying LoP Bars...");
 
-	if (D3D12Hook::GetInstance().IsHooked())
-		D3D12Hook::GetInstance().Unhook();
-
-	if (!WindowsMessageHook::GetInstance().IsHookIntact())
-		WindowsMessageHook::GetInstance().Unhook();
-
-	if (ImGui::GetCurrentContext() != nullptr)
-	{
-		if (ImGui::GetIO().BackendRendererUserData != nullptr)
-			ImGui_ImplDX12_Shutdown();
-		if (ImGui::GetIO().BackendPlatformUserData != nullptr)
-			ImGui_ImplWin32_Shutdown();
-		ImGui::DestroyContext();
-	}
-	iD3D12.frameContexts.clear();
-	iD3D12.pCmdAllocator = nullptr;
-	iD3D12.pCmdList = nullptr;
-	iD3D12.pRTVHeapDesc = nullptr;
-	iD3D12.pSRVHeapDesc = nullptr;
-
-	imGuiWindows.clear();
+	Cleanup();
 }
 
 bool LoPBars::HookD3D12()
@@ -148,9 +142,7 @@ bool LoPBars::Initialize()
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 
-	SetImGuiStyle();
-
-	// TODO apply ini file configs
+	ConfigImGui();
 
 	if (!ImGui_ImplWin32_Init(hWnd))
 	{
@@ -173,24 +165,60 @@ bool LoPBars::Initialize()
 	return true;
 }
 
-void LoPBars::SetImGuiStyle()
+void LoPBars::Cleanup()
+{
+	ConfigManager::GetInstance().SaveData();
+
+	if (D3D12Hook::GetInstance().IsHooked())
+		D3D12Hook::GetInstance().Unhook();
+
+	if (!WindowsMessageHook::GetInstance().IsHookIntact())
+		WindowsMessageHook::GetInstance().Unhook();
+
+	if (ImGui::GetCurrentContext() != nullptr)
+	{
+		if (ImGui::GetIO().BackendRendererUserData != nullptr)
+			ImGui_ImplDX12_Shutdown();
+		if (ImGui::GetIO().BackendPlatformUserData != nullptr)
+			ImGui_ImplWin32_Shutdown();
+		ImGui::DestroyContext();
+	}
+
+	iD3D12.frameContexts.clear();
+	iD3D12.pCmdAllocator = nullptr;
+	iD3D12.pCmdList = nullptr;
+	iD3D12.pRTVHeapDesc = nullptr;
+	iD3D12.pSRVHeapDesc = nullptr;
+
+	imGuiWindows.clear();
+}
+
+void LoPBars::ConfigImGui()
 {
 	ImGui::StyleColorsDark();
 
 	auto& style = ImGui::GetStyle();
 	style.WindowRounding = 4.0f;
-	style.ChildRounding = 2.0f;
-	style.PopupRounding = 2.0f;
-	style.FrameRounding = 2.0f;
-	style.ScrollbarRounding = 2.0f;
+	style.ChildRounding = 4.0f;
+	style.PopupRounding = 4.0f;
+	style.FrameRounding = 4.0f;
+	style.ScrollbarRounding = 9.0f;
+	style.FrameBorderSize = 1.0f;
+
 	style.SelectableTextAlign = ImVec2(0.5f, 0.5f);
 	style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
 	style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
 	style.SeparatorTextAlign = ImVec2(0.5f, 0.5f);
+
 	style.WindowMenuButtonPosition = ImGuiDir_None;
 
 	auto& colors = ImGui::GetStyle().Colors;
-	colors[ImGuiCol_FrameBg] = ImVec4(0.155f, 0.155f, 0.155f, 0.8f);
+	colors[ImGuiCol_Border] = ImVec4(1.0f, 1.0f, 1.0f, 0.1f);
+	colors[ImGuiCol_FrameBg] = ImVec4(0.155f, 0.155f, 0.155f, 0.5f);
+
+	auto& io = ImGui::GetIO();
+	io.IniFilename = "lop_bars_imgui.ini";
+	io.LogFilename = nullptr;
 }
 
 bool LoPBars::InitializeD3D12()
@@ -289,19 +317,16 @@ bool LoPBars::InitializeD3D12()
 
 void LoPBars::OnPresentD3D12()
 {
-	std::scoped_lock _{ mtxImGui };
-
 	if (!bIsInitialized)
 	{
 		if (!Initialize())
 		{
-			LOG_ERROR("Failed to initialize! Attempt " << std::dec << ++initAttemptCount << "/" << MAX_INIT_ATTEMPTS);
+			LOG_ERROR("Failed to initialize! Attempt " << std::dec << initAttemptCount + 1 << "/" << MAX_INIT_ATTEMPTS);
 
-			if (initAttemptCount >= MAX_INIT_ATTEMPTS)
+			if (++initAttemptCount >= MAX_INIT_ATTEMPTS)
 			{
-				// sepuku :(
-				MessageBox(0, L"LoP Bars failed to initialize.", L"LoP Bars", MB_OK | MB_ICONERROR);
-				delete this;
+				MessageBox(0, L"Failed to initialize D3D12.", L"LoP Bars", MB_OK | MB_ICONERROR);
+				Cleanup();
 			}
 			return;
 		}
@@ -351,13 +376,11 @@ void LoPBars::OnPresentD3D12()
 
 void LoPBars::OnPostPresentD3D12()
 {
-	std::scoped_lock _{ mtxImGui };
 
 }
 
 void LoPBars::OnDeviceReset()
 {
-	std::scoped_lock _{ mtxImGui };
 	bIsInitialized = false;
 
 	if (ImGui::GetCurrentContext() != nullptr)

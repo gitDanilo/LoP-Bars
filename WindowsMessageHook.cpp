@@ -80,6 +80,8 @@ bool WindowsMessageHook::Unhook()
 		return false;
 	}
 
+	LOG_INFO("Unhooking Windows message handler...");
+
 	// Restore the original window procedure.
 	auto fnCurrentProc = (WNDPROC)GetWindowLongPtr(hwnd, GWLP_WNDPROC);
 

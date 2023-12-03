@@ -119,7 +119,15 @@ static DWORD WINAPI InitializeProxy(LPVOID lpThreadParameter)
 	MessageBox(0, L"Waiting for debugger...", L"LoP Bars", MB_OK | MB_ICONINFORMATION);
 #endif
 
-	LoPBars::GetInstance();
+	try
+	{
+		LoPBars::GetInstance();
+	}
+	catch (std::exception& e)
+	{
+		MessageBoxA(0, e.what(), "LoP Bars", MB_OK | MB_ICONERROR);
+		return 2;
+	}
 
 	return 0;
 }

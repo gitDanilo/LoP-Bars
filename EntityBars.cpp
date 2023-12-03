@@ -2,47 +2,16 @@
 #include "utility/Module.hpp"
 #include "utility/Memory.hpp"
 #include "utility/Log.hpp"
+#include "ConfigManager.hpp"
 #include <format>
+#include <limits>
 
 static EntityBars* gEntityBars = nullptr;
 
-void ABNORMAL_STAT_LIST::GetElementalBuildup(float& fire, float& eletric, float& acid)
-{
-	fire = 0.0f;
-	eletric = 0.0f;
-	acid = 0.0f;
-
-	if (iNewSlot < 3)
-		return;
-
-	size_t last = 0x20 + ((iNewSlot - 2) * 0x10);
-	char iClass;
-
-	for (size_t i = 0x20; i < last; i += 0x10)
-	{
-		iClass = *(char*)(*(uintptr_t*)(*(uintptr_t*)(pList + i) + 0x8) + 0x84);
-		switch (iClass)
-		{
-		case 0x1:
-			fire = trunc(*(float*)(*(uintptr_t*)(pList + i) + 0x258));
-			continue;
-		case 0x2:
-			eletric = trunc(*(float*)(*(uintptr_t*)(pList + i) + 0x258));
-			continue;
-		case 0x3:
-			acid = trunc(*(float*)(*(uintptr_t*)(pList + i) + 0x258));
-			continue;
-		default:
-			continue;
-		}
-	}
-}
-
-EntityBars::EntityBars() : inputData(), bIsInitialized(false), pLockOnSystemData(nullptr), lockedEntity(), fnGetMaxDurability(nullptr)
+EntityBars::EntityBars() : context(), bIsInitialized(false), pLockOnSystemData(nullptr), target(), fnGetMaxDurability(nullptr)
 {
 	gEntityBars = this;
-	inputData.bShowWindow = true;
-	inputData.iPosition = WINDOW_POSITION::CENTER_RIGHT;
+	context.bShowWindow = true;
 }
 
 EntityBars::~EntityBars()
@@ -66,190 +35,11 @@ void EntityBars::SetLockOnSystemData(void* unknown1, void* pLockOnSystemData, vo
 	fnSetLockOn(unknown1, pLockOnSystemData, unknown2);
 }
 
-void EntityBars::GetWindowPos(WINDOW_POSITION iPosition, ImVec2& windowPos, ImVec2& windowPosPivot, const float PAD)
-{
-	auto viewport = ImGui::GetMainViewport();
-	switch (iPosition)
-	{
-	case WINDOW_POSITION::TOP_LEFT:
-		windowPos.x = viewport->WorkPos.x + PAD;
-		windowPos.y = viewport->WorkPos.y + PAD;
-		windowPosPivot.x = 0.0f;
-		windowPosPivot.y = 0.0f;
-		break;
-	case WINDOW_POSITION::CENTER_LEFT:
-		windowPos.x = viewport->WorkPos.x + PAD;
-		windowPos.y = viewport->GetCenter().y;
-		windowPosPivot.x = 0.0f;
-		windowPosPivot.y = 0.5f;
-		break;
-	case WINDOW_POSITION::BOTTOM_LEFT:
-		windowPos.x = viewport->WorkPos.x + PAD;
-		windowPos.y = viewport->WorkPos.y + viewport->WorkSize.y - PAD;
-		windowPosPivot.x = 0.0f;
-		windowPosPivot.y = 1.0f;
-		break;
-
-	case WINDOW_POSITION::TOP_CENTER:
-		windowPos.x = viewport->GetCenter().x;
-		windowPos.y = viewport->WorkPos.y + PAD;
-		windowPosPivot.x = 0.5f;
-		windowPosPivot.y = 0.0f;
-		break;
-	case WINDOW_POSITION::BOTTOM_CENTER:
-		windowPos.x = viewport->GetCenter().x;
-		windowPos.y = viewport->WorkPos.y + viewport->WorkSize.y - PAD;
-		windowPosPivot.x = 0.5f;
-		windowPosPivot.y = 1.0f;
-		break;
-
-	case WINDOW_POSITION::TOP_RIGHT:
-		windowPos.x = viewport->WorkPos.x + viewport->WorkSize.x - PAD;
-		windowPos.y = viewport->WorkPos.y + PAD;
-		windowPosPivot.x = 1.0f;
-		windowPosPivot.y = 0.0f;
-		break;
-	case WINDOW_POSITION::CENTER_RIGHT:
-		windowPos.x = viewport->WorkPos.x + viewport->WorkSize.x - PAD;
-		windowPos.y = viewport->GetCenter().y;
-		windowPosPivot.x = 1.0f;
-		windowPosPivot.y = 0.5f;
-		break;
-	case WINDOW_POSITION::BOTTOM_RIGHT:
-		windowPos.x = viewport->WorkPos.x + viewport->WorkSize.x - PAD;
-		windowPos.y = viewport->WorkPos.y + viewport->WorkSize.y - PAD;
-		windowPosPivot.x = 1.0f;
-		windowPosPivot.y = 1.0f;
-		break;
-	}
-}
-
-void EntityBars::OnDraw()
-{
-	if (!bIsInitialized)
-		return;
-
-	static INPUT_DATA tmpInputData = { 0 };
-	inputData.GetData(tmpInputData);
-
-	if (!tmpInputData.bShowWindow || pLockOnSystemData == nullptr)
-		return;
-
-	lockedEntity.pBase = (char*)*(uintptr_t*)(pLockOnSystemData + 0x200);
-	if (lockedEntity.pBase == nullptr)
-		return;
-
-	lockedEntity.pStatList = (char*)*(uintptr_t*)(*(uintptr_t*)(*(uintptr_t*)(lockedEntity.pBase + 0x848) + 0xE0) + 0x28);
-	lockedEntity.abnormalStatList = *(ABNORMAL_STAT_LIST*)(*(uintptr_t*)(lockedEntity.pBase + 0x850) + 0xD0);
-
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize |
-		ImGuiWindowFlags_NoSavedSettings |
-		ImGuiWindowFlags_NoFocusOnAppearing |
-		ImGuiWindowFlags_NoNav;
-
-	if (!tmpInputData.bEnableDrag)
-		windowFlags = windowFlags | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
-	else
-		ImGui::SetNextWindowFocus();
-
-	auto& io = ImGui::GetIO();
-
-	io.MouseDrawCursor = tmpInputData.bEnableDrag;
-
-	constexpr auto PAD = 10.0f;
-	const ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() + 5.0f);
-
-	if (tmpInputData.iPosition != WINDOW_POSITION::CUSTOM)
-	{
-		ImVec2 windowPos(0, 0), windowPosPivot(0, 0);
-		GetWindowPos(tmpInputData.iPosition, windowPos, windowPosPivot, 10.0f);
-		ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
-	}
-
-	ImGui::SetNextWindowSize(ImVec2(200.0f, 0.0f));
-	ImGui::SetNextWindowBgAlpha(0.45f);
-	if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
-	{
-		ImGui::SeparatorText("Stats");
-
-		// Health
-		int iValue = *(int*)(lockedEntity.pStatList + 0xC);
-		int iMaxValue = *(int*)(lockedEntity.pStatList + 0xD2C);
-		std::string sText = std::format("Health ({}/{})", iValue, iMaxValue);
-		ImGui::ProgressBar((float)iValue / (float)iMaxValue, progressBarSize, sText.c_str(), ImVec4(0.35f, 0.0f, 0.0f, 0.85f));
-
-		// Stamina
-		iValue = *(int*)(lockedEntity.pStatList + 0x3C);
-		iMaxValue = *(int*)(lockedEntity.pStatList + 0xD5C);
-		sText = std::format("Stamina ({}/{})", iValue, iMaxValue);
-		ImGui::ProgressBar((float)iValue / (float)iMaxValue, progressBarSize, sText.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
-
-		// Tough
-		iValue = *(int*)(lockedEntity.pStatList + 0x18C);
-		iMaxValue = *(int*)(lockedEntity.pStatList + 0xE1C);
-		sText = std::format("Posture ({}/{})", iValue, iMaxValue);
-		ImGui::ProgressBar((float)iValue / (float)iMaxValue, progressBarSize, sText.c_str(), ImVec4(0.45f, 0.0f, 0.5f, 0.85f));
-
-		float fValue = 100.0f;
-		float fMaxValue = 100.0f;
-
-		// Stagger
-		iValue = *(int*)(lockedEntity.pStatList + 0x8DC);
-		if (iValue == 0)
-		{
-			// Stagger elapsed time
-			//fValue = *(float*)(lockedEntity.pBase + 0xF64); // Stagger elapsed time
-			fValue = *(float*)(lockedEntity.pBase + 0xF68); // Stagger duration time
-			fMaxValue = *(float*)(lockedEntity.pBase + 0xF60); // Stagger duration
-
-			sText = std::format("Stagger duration {}s", (int)fValue);
-			ImGui::ProgressBar(fValue / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.9f, 0.7f, 0.0f, 0.85f));
-		}
-		else
-		{
-			iMaxValue = *(int*)(lockedEntity.pStatList + 0xE7C);
-			sText = std::format("Stagger ({}/{})", iValue, iMaxValue);
-			ImGui::ProgressBar((float)iValue / (float)iMaxValue, progressBarSize, sText.c_str(), ImVec4(0.9f, 0.7f, 0.0f, 0.85f));
-		}
-
-		ImGui::SeparatorText("Buildup");
-
-		float fEletric, fAcid;
-		lockedEntity.abnormalStatList.GetElementalBuildup(fValue, fEletric, fAcid);
-
-		fMaxValue = (float)*(int*)(lockedEntity.pStatList + 0x16BC);
-		sText = std::format("Fire ({}/{})", fValue, fMaxValue);
-		ImGui::ProgressBar(fValue / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.8f, 0.4f, 0.0f, 0.85f));
-
-		fMaxValue = (float)*(int*)(lockedEntity.pStatList + 0x16EC);
-		sText = std::format("Eletric ({}/{})", fEletric, fMaxValue);
-		ImGui::ProgressBar(fEletric / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.0f, 0.25f, 0.75f, 0.85f));
-
-		fMaxValue = (float)*(int*)(lockedEntity.pStatList + 0x171C);
-		sText = std::format("Acid ({}/{})", fAcid, fMaxValue);
-		ImGui::ProgressBar(fAcid / fMaxValue, progressBarSize, sText.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
-
-		lockedEntity.weaponList = *(WEAPON_LIST*)(lockedEntity.pBase + 0xE0);
-		if (lockedEntity.weaponList.iWeaponCount > 0)
-		{
-			ImGui::SeparatorText("Weapons");
-			char* pWeapon;
-			for (int i = 0; i < lockedEntity.weaponList.iWeaponCount; ++i)
-			{
-				pWeapon = (char*)*(uintptr_t*)(lockedEntity.weaponList.pList + (i * sizeof(void*)));
-				iValue = *(int*)(pWeapon + 0x308);
-				iMaxValue = fnGetMaxDurability(pWeapon);
-				sText = std::format("Durability ({}/{})", i + 1, iValue, iMaxValue);
-				ImGui::ProgressBar((float)iValue / (float)iMaxValue, progressBarSize, sText.c_str(), ImVec4(0.2f, 0.45f, 0.0f, 0.85f));
-			}
-		}
-	}
-	ImGui::End();
-}
-
 bool EntityBars::OnInitialize()
 {
 	LOG_INFO("Initializing EntityBars...");
+
+	context.bCustomPosition = ConfigManager::GetInstance().Get<int>("IsCustomPosition").value_or(0);
 
 	HMODULE hExec = utility::GetExecutable();
 	if (hExec == NULL)
@@ -292,6 +82,8 @@ bool EntityBars::OnInitialize()
 		return false;
 	}
 
+	fnGetMaxDurability = (GetMaxDurability)pFunction;
+
 	bIsInitialized = true;
 
 	//pThreadUpdateEntity = std::make_unique<std::jthread>(std::bind_front(&EntityBars::UpdateEntityData, this));
@@ -306,9 +98,202 @@ void EntityBars::OnReset()
 	if (!bIsInitialized)
 		return;
 
-	std::scoped_lock _{ inputData.mutex };
-	inputData.bEnableDrag = false;
-	inputData.iPosition = WINDOW_POSITION::CENTER_RIGHT;
+	std::scoped_lock _{ context.mutex };
+	context.bEnableDrag = false;
+}
+
+void EntityBars::ShowBasicStats(int iValues[], float fValues[], const ImVec2& progressBarSize)
+{
+	ImGui::SeparatorText("Stats");
+
+	// Health
+	iValues[0] = *(int*)(target.pStatList + 0xC);
+	iValues[1] = *(int*)(target.pStatList + 0xD2C);
+	std::string sText = std::format("Health ({}/{})", iValues[0], iValues[1]);
+	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.4f, 0.0f, 0.0f, 1.0f));
+
+	// Stamina
+	iValues[0] = *(int*)(target.pStatList + 0x3C);
+	iValues[1] = *(int*)(target.pStatList + 0xD5C);
+	sText = std::format("Stamina ({}/{})", iValues[0], iValues[1]);
+	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.0f, 0.4f, 0.0f, 1.0f));
+
+	// Tough
+	iValues[0] = *(int*)(target.pStatList + 0x18C);
+	iValues[1] = *(int*)(target.pStatList + 0xE1C);
+	sText = std::format("Posture ({}/{})", iValues[0], iValues[1]);
+	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.5f, 0.0f, 0.5f, 1.0f));
+
+	// Stagger
+	iValues[0] = *(int*)(target.pStatList + 0x8DC); // Stagger point
+	iValues[1] = *(int*)(target.pStatList + 0xE7C); // Max stagger point
+	fValues[1] = *(float*)(target.pBase + 0xF60); // Stagger max duration
+	if (iValues[0] == 0 && fValues[1] > 1.0f)
+	{
+		fValues[0] = *(float*)(target.pBase + 0xF68); // Stagger retain/duration
+		sText = std::vformat("Stagger {:.2f}s"sv, std::make_format_args(fValues[0]));
+		ImGui::ProgressBar(fValues[0] / fValues[1], progressBarSize, sText.c_str(), ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+	}
+	else if (iValues[1] > 0)
+	{
+		sText = std::format("Stagger ({}/{})", iValues[0], iValues[1]);
+		ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+	}
+}
+
+void EntityBars::ShowElementalBuildup(const ImVec2& progressBarSize)
+{
+	size_t end = (target.abnormalStatList.iSize * 0x10);
+	uintptr_t itemAddr;
+	char e;
+	bool bIsDebuffActive;
+
+	memset(E_BAR_LIST, 0, sizeof(E_BAR) * E_TYPE::COUNT);
+
+	for (size_t i = 0; i < end; i += 0x10)
+	{
+		itemAddr = *(uintptr_t*)(target.abnormalStatList.pList + i);
+
+		e = *(char*)(*(uintptr_t*)(itemAddr + 0x8) + 0x84); // Element type
+
+		if (e < E_TYPE::FIRE || e > E_TYPE::COUNT - 1) // Skip unsupported types
+			continue;
+
+		E_BAR_LIST[e].fValues[0] = *(float*)(itemAddr + 0x258); // Current buildup
+		E_BAR_LIST[e].fValues[1] = (float)*(int*)(target.pStatList + E_RESIST_OFFSET[e]); // Max buildup
+		bIsDebuffActive = (E_BAR_LIST[e].fValues[0] == E_BAR_LIST[e].fValues[1]); // Check if debuff is active
+
+		// Get Retain values if debuff is active
+		if (bIsDebuffActive)
+		{
+			E_BAR_LIST[e].fValues[0] = *(int*)(itemAddr + 0x74) / 1000.0f; // Buildup retain in seconds
+			E_BAR_LIST[e].fValues[1] = *(int*)(itemAddr + 0x78) / 1000.0f; // Buildup max retain in seconds
+			if (E_BAR_LIST[e].fValues[0] < 0.0f)
+				E_BAR_LIST[e].fValues[0] = 0.0f;
+		}
+
+		// Set the progress bar text
+		E_BAR_LIST[e].sBarText = bIsDebuffActive ?
+			std::format("{} {:.2f}s"sv, E_NAME[e], E_BAR_LIST[e].fValues[0]).c_str() :
+			std::format("{} ({}/{})"sv, E_NAME[e], (int)E_BAR_LIST[e].fValues[0], (int)E_BAR_LIST[e].fValues[1]).c_str();
+	}
+
+	ImGui::SeparatorText("Buildup");
+
+	for (char i = E_TYPE::FIRE; i < E_TYPE::COUNT; ++i)
+	{
+		if (E_BAR_LIST[i].sBarText == nullptr)
+		{
+			E_BAR_LIST[i].fValues[1] = (float)*(int*)(target.pStatList + E_RESIST_OFFSET[i]); // Max buildup
+			E_BAR_LIST[i].sBarText = std::format("{} ({}/{})"sv, E_NAME[i], 0.0f, (int)E_BAR_LIST[i].fValues[1]).c_str();
+		}
+		ImGui::ProgressBar(E_BAR_LIST[i].fValues[0] / E_BAR_LIST[i].fValues[1], progressBarSize, E_BAR_LIST[i].sBarText, E_COLOR[i]);
+	}
+
+}
+
+void EntityBars::ShowWeaponsDurability(int iValues[], const ImVec2& progressBarSize)
+{
+	char* pWeapon;
+	bool bShowHeader = true;
+
+	for (int i = 0; i < target.weaponList.iSize; ++i)
+	{
+		pWeapon = (char*)*(uintptr_t*)(target.weaponList.pList + (i * sizeof(void*)));
+		iValues[0] = *(int*)(pWeapon + 0x308);
+
+		if (iValues[0] < 0)
+			continue;
+
+		if (bShowHeader)
+		{
+			bShowHeader = false;
+			ImGui::SeparatorText("Weapons");
+		}
+
+		iValues[1] = fnGetMaxDurability(pWeapon);
+		std::string sText = std::format("Durability ({}/{})", iValues[0], iValues[1]);
+		ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.9f, 0.7f, 0.0f, 1.0f));
+	}
+}
+
+void EntityBars::OnDraw()
+{
+	if (!bIsInitialized)
+		return;
+
+	static WND_CONTEXT tmpContext;
+	context.GetData(tmpContext);
+
+	if (!tmpContext.bShowWindow || pLockOnSystemData == nullptr)
+		return;
+
+	target.pBase = (char*)*(uintptr_t*)(pLockOnSystemData + 0x200);
+	if (target.pBase == nullptr)
+		return;
+
+	// Check if entity has any basic stats. If don't, then skip.
+	uintptr_t ptr = *(uintptr_t*)(target.pBase + 0x848);
+	if (ptr == 0 || ptr == std::numeric_limits<uintptr_t>::max())
+		return;
+
+	target.pStatList = (char*)*(uintptr_t*)(*(uintptr_t*)(ptr + 0xE0) + 0x28);
+
+	// Check if entity has any abnormal stats.
+	ptr = *(uintptr_t*)(target.pBase + 0x850);
+	if (ptr == 0 || ptr == std::numeric_limits<uintptr_t>::max())
+		target.abnormalStatList.iSize = -1;
+	else
+		target.abnormalStatList = *(LIST_DATA*)(ptr + 0xD0);
+
+	// Check if entity has any weapons.
+	ptr = *(uintptr_t*)(target.pBase + 0xE0);
+	if (ptr == 0 || ptr == std::numeric_limits<uintptr_t>::max())
+		target.weaponList.iSize = -1;
+	else
+		target.weaponList = *(LIST_DATA*)(ptr);
+
+	static ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+	if (!tmpContext.bEnableDrag)
+		windowFlags = windowFlags | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
+	else
+		ImGui::SetNextWindowFocus();
+
+	auto& io = ImGui::GetIO();
+
+	io.MouseDrawCursor = tmpContext.bEnableDrag;
+
+	if (!tmpContext.bCustomPosition)
+	{
+		ImVec2 windowPos, windowPosPivot;
+		auto viewport = ImGui::GetMainViewport();
+		windowPos.x = viewport->WorkPos.x + viewport->WorkSize.x - 10.0f;
+		windowPos.y = viewport->GetCenter().y;
+		windowPosPivot.x = 1.0f;
+		windowPosPivot.y = 0.5f;
+		ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
+	}
+
+	static ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() + 7.0f);
+
+	ImGui::SetNextWindowSize(ImVec2(220.0f, 0.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowBgAlpha(0.5f);
+
+	if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
+	{
+		int iValues[2];
+		float fValues[2];
+
+		ShowBasicStats(iValues, fValues, progressBarSize);
+
+		if (target.abnormalStatList.iSize > -1)
+			ShowElementalBuildup(fValues, progressBarSize);
+
+		if (target.weaponList.iSize > 0)
+			ShowWeaponsDurability(iValues, progressBarSize);
+	}
+	ImGui::End();
 }
 
 bool EntityBars::OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -316,44 +301,47 @@ bool EntityBars::OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	if (!bIsInitialized)
 		return true;
 
-	static bool isKeyboardInput = false;
-
-	if (iMsg == WM_KEYDOWN)
+	switch (iMsg)
 	{
-		isKeyboardInput = true;
-
-		switch (wParam)
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+			if (context.bEnableDrag)
+				return false;
+			break;
+		case WM_KEYDOWN:
 		{
-		case VK_HOME:
-		{
-			std::scoped_lock _{ inputData.mutex };
-			inputData.bShowWindow = !inputData.bShowWindow;
+			switch (wParam)
+			{
+				case VK_HOME: // Toggle overlay
+				{
+					std::scoped_lock _{ context.mutex };
+					context.bShowWindow = !context.bShowWindow;
+				}
+				return false;
+				case VK_PRIOR: // Reset window position
+					if (context.bShowWindow)
+					{
+						std::scoped_lock _{ context.mutex };
+						context.bEnableDrag = false;
+						context.bCustomPosition = false;
+						ConfigManager::GetInstance().Set<int>("IsCustomPosition", 0);
+					}
+					return false;
+				case VK_NEXT: // Toggle window drag and resize 
+					if (context.bShowWindow)
+					{
+						std::scoped_lock _{ context.mutex };
+						context.bEnableDrag = !context.bEnableDrag;
+						context.bCustomPosition = true;
+						if (!context.bEnableDrag)
+							ConfigManager::GetInstance().Set<int>("IsCustomPosition", 1);
+					}
+					return false;
+			}
 		}
 		break;
-		case VK_END:
-		{
-			std::scoped_lock _{ inputData.mutex };
-			inputData.bEnableDrag = !inputData.bEnableDrag;
-			if (inputData.bEnableDrag)
-				inputData.iPosition = WINDOW_POSITION::CUSTOM;
-		}
-		break;
-		case VK_PRIOR:
-		{
-			std::scoped_lock _{ inputData.mutex };
-			inputData.bEnableDrag = false;
-			inputData.iPosition = WINDOW_POSITION((inputData.iPosition + 1) % WINDOW_POSITION::CUSTOM);
-		}
-		break;
-		case VK_NEXT:
-		{
-			std::scoped_lock _{ inputData.mutex };
-			inputData.bEnableDrag = false;
-			inputData.iPosition = WINDOW_POSITION(inputData.iPosition == 0 ? WINDOW_POSITION::CUSTOM - 1 : inputData.iPosition - 1);
-		}
-		break;
-		}
 	}
-
-	return isKeyboardInput || !inputData.bEnableDrag;
+	return true;
 }

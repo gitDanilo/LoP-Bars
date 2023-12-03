@@ -105,6 +105,9 @@
     <ClCompile Include="utility\Memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Splash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="lop_bars.def">
@@ -206,6 +209,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utility\Memory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Splash.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

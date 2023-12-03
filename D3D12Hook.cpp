@@ -249,7 +249,7 @@ bool D3D12Hook::Hook()
 	constexpr uintptr_t MAX_PTRS_OFFSET = 512 * sizeof(void*);
 	uintptr_t baseAddr;
 
-	for (uintptr_t i = 0; i < MAX_PTRS_OFFSET; i += sizeof(void*))
+	for (auto i = 0; i < MAX_PTRS_OFFSET; i += sizeof(void*))
 	{
 		baseAddr = (uintptr_t)pSwapChain1 + i;
 
@@ -272,7 +272,7 @@ bool D3D12Hook::Hook()
 
 		uintptr_t highBaseAddr, cmdBaseAddr;
 
-		for (uintptr_t i = 0; i < MAX_PTRS_OFFSET; i += sizeof(void*))
+		for (auto i = 0; i < MAX_PTRS_OFFSET; i += sizeof(void*))
 		{
 			baseAddr = (uintptr_t)pSwapChain1 + i;
 
@@ -284,7 +284,7 @@ bool D3D12Hook::Hook()
 			if (highBaseAddr == 0 || utility::IsBadReadPtr((void*)highBaseAddr))
 				continue;
 
-			for (uintptr_t j = 0; j < MAX_PTRS_OFFSET; j += sizeof(void*))
+			for (auto j = 0; j < MAX_PTRS_OFFSET; j += sizeof(void*))
 			{
 				cmdBaseAddr = highBaseAddr + j;
 

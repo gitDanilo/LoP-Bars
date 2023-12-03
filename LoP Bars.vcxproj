@@ -201,6 +201,7 @@
     <ClCompile Include="minhook\src\HDE\hde64.c" />
     <ClCompile Include="minhook\src\hook.c" />
     <ClCompile Include="minhook\src\trampoline.c" />
+    <ClCompile Include="Splash.cpp" />
     <ClCompile Include="utility\Address.cpp" />
     <ClCompile Include="utility\FunctionHook.cpp" />
     <ClCompile Include="utility\Memory.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="minhook\src\HDE\table32.h" />
     <ClInclude Include="minhook\src\HDE\table64.h" />
     <ClInclude Include="minhook\src\trampoline.h" />
+    <ClInclude Include="Splash.hpp" />
     <ClInclude Include="utility\Address.hpp" />
     <ClInclude Include="utility\FunctionHook.hpp" />
     <ClInclude Include="utility\Memory.hpp" />

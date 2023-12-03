@@ -8,7 +8,7 @@
 #include "WindowsMessageHook.hpp"
 #include "ImGuiWindow.hpp"
 
-#define MAX_INIT_ATTEMPTS 5
+#define MAX_INIT_ATTEMPTS 3
 
 template <typename T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
@@ -46,8 +46,6 @@ public:
 private:
 	LoPBars();
 	HWND hWnd;
-	std::recursive_mutex mtxStartup;
-	std::recursive_mutex mtxImGui;
 	D3D12_INTERFACE iD3D12;
 	std::vector<std::unique_ptr<ImGuiWindow>> imGuiWindows;
 	bool bIsInitialized;
@@ -55,7 +53,8 @@ private:
 	bool HookD3D12();
 	bool HookWindowsMsg();
 	bool Initialize();
-	void SetImGuiStyle();
+	void Cleanup();
+	void ConfigImGui();
 	bool InitializeD3D12();
 	void OnPresentD3D12();
 	void OnPostPresentD3D12();

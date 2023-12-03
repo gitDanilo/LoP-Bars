@@ -1265,7 +1265,7 @@ bool ImGui::RadioButton(const char* label, int* v, int v_button)
 }
 
 // size_arg (for each axis) < 0.0f: align to end, 0.0f: auto, > 0.0f: specified size
-void ImGui::ProgressBar(float fraction, const ImVec2& size_arg, const char* overlay, const ImVec4 progressColor)
+void ImGui::ProgressBar(float fraction, const ImVec2& size_arg, const char* overlay, const ImVec4& progressColor)
 {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
