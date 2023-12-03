@@ -363,10 +363,6 @@ namespace utility
 			callback(entry, ldr_entry);
 		}
 	}
-	catch (std::exception& e)
-	{
-		LOG_ERROR("Exception while iterating modules: " << e.what());
-	}
 	catch (...)
 	{
 		LOG_ERROR("Unexpected exception while iterating modules. Continuing...");

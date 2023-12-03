@@ -75,7 +75,7 @@ void Splash::ShowWelcomeWindow()
 		ImGui::Text("Reset window position");
 		ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "PG_DOWN");
 		ImGui::SameLine();
-		ImGui::Text("Toggle window drag and resize ON/OFF");
+		ImGui::Text("Toggle window drag ON/OFF");
 		ImGui::NewLine();
 		ImGui::Text("Mod created by: Nashnaiderman");
 	}

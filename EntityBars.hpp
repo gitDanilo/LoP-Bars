@@ -67,7 +67,7 @@ static const std::string_view E_NAME[] =
 struct E_BAR
 {
 	float fValues[2];
-	const char* sBarText;
+	std::string sBarText;
 };
 
 static E_BAR E_BAR_LIST[E_TYPE::COUNT] = { 0 };

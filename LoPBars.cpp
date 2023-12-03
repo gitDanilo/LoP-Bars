@@ -217,7 +217,7 @@ void LoPBars::ConfigImGui()
 	colors[ImGuiCol_FrameBg] = ImVec4(0.155f, 0.155f, 0.155f, 0.5f);
 
 	auto& io = ImGui::GetIO();
-	io.IniFilename = "lop_bars_imgui.ini";
+	io.IniFilename = "lop_bars.ini";
 	io.LogFilename = nullptr;
 }
 
@@ -342,6 +342,9 @@ void LoPBars::OnPresentD3D12()
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+
 	for (auto &wnd : imGuiWindows)
 		wnd->OnDraw();
 	ImGui::EndFrame();

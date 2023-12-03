@@ -59,9 +59,9 @@ bool PointerHook::Remove()
 			ProtectionOverride protectionOverride(pReplace, sizeof(void*), PAGE_EXECUTE_READWRITE);
 			*pReplace = pOriginal;
 		}
-		catch (std::exception& e)
+		catch (...)
 		{
-			LOG_ERROR("PointerHook failed to remove hook with: " << e.what());
+			LOG_ERROR("PointerHook failed to remove the hook.");
 			return false;
 		}
 	}
@@ -78,9 +78,9 @@ bool PointerHook::Restore()
 			ProtectionOverride protectionOverride(pReplace, sizeof(void*), PAGE_EXECUTE_READWRITE);
 			*pReplace = pDestination;
 		}
-		catch (std::exception& e)
+		catch (...)
 		{
-			LOG_ERROR("PointerHook: " << e.what());
+			LOG_ERROR("PointerHook failed to restore the hook.");
 			return false;
 		}
 	}

@@ -174,20 +174,20 @@ void EntityBars::ShowElementalBuildup(const ImVec2& progressBarSize)
 
 		// Set the progress bar text
 		E_BAR_LIST[e].sBarText = bIsDebuffActive ?
-			std::format("{} {:.2f}s"sv, E_NAME[e], E_BAR_LIST[e].fValues[0]).c_str() :
-			std::format("{} ({}/{})"sv, E_NAME[e], (int)E_BAR_LIST[e].fValues[0], (int)E_BAR_LIST[e].fValues[1]).c_str();
+			std::format("{} {:.2f}s"sv, E_NAME[e], E_BAR_LIST[e].fValues[0]) :
+			std::format("{} ({}/{})"sv, E_NAME[e], (int)E_BAR_LIST[e].fValues[0], (int)E_BAR_LIST[e].fValues[1]);
 	}
 
 	ImGui::SeparatorText("Buildup");
 
 	for (char i = E_TYPE::FIRE; i < E_TYPE::COUNT; ++i)
 	{
-		if (E_BAR_LIST[i].sBarText == nullptr)
+		if (E_BAR_LIST[i].fValues[1] <= 0.0f)
 		{
 			E_BAR_LIST[i].fValues[1] = (float)*(int*)(target.pStatList + E_RESIST_OFFSET[i]); // Max buildup
-			E_BAR_LIST[i].sBarText = std::format("{} ({}/{})"sv, E_NAME[i], 0.0f, (int)E_BAR_LIST[i].fValues[1]).c_str();
+			E_BAR_LIST[i].sBarText = std::format("{} ({}/{})"sv, E_NAME[i], 0.0f, (int)E_BAR_LIST[i].fValues[1]);
 		}
-		ImGui::ProgressBar(E_BAR_LIST[i].fValues[0] / E_BAR_LIST[i].fValues[1], progressBarSize, E_BAR_LIST[i].sBarText, E_COLOR[i]);
+		ImGui::ProgressBar(E_BAR_LIST[i].fValues[0] / E_BAR_LIST[i].fValues[1], progressBarSize, E_BAR_LIST[i].sBarText.c_str(), E_COLOR[i]);
 	}
 
 }
@@ -234,26 +234,21 @@ void EntityBars::OnDraw()
 
 	// Check if entity has any basic stats. If don't, then skip.
 	uintptr_t ptr = *(uintptr_t*)(target.pBase + 0x848);
-	if (ptr == 0 || ptr == std::numeric_limits<uintptr_t>::max())
+	if (utility::IsBadReadPtr((void*)ptr))
 		return;
 
 	target.pStatList = (char*)*(uintptr_t*)(*(uintptr_t*)(ptr + 0xE0) + 0x28);
 
 	// Check if entity has any abnormal stats.
 	ptr = *(uintptr_t*)(target.pBase + 0x850);
-	if (ptr == 0 || ptr == std::numeric_limits<uintptr_t>::max())
+	if (utility::IsBadReadPtr((void*)ptr))
 		target.abnormalStatList.iSize = -1;
 	else
 		target.abnormalStatList = *(LIST_DATA*)(ptr + 0xD0);
 
-	// Check if entity has any weapons.
-	ptr = *(uintptr_t*)(target.pBase + 0xE0);
-	if (ptr == 0 || ptr == std::numeric_limits<uintptr_t>::max())
-		target.weaponList.iSize = -1;
-	else
-		target.weaponList = *(LIST_DATA*)(ptr);
+	target.weaponList = *(LIST_DATA*)(target.pBase + 0xE0);
 
-	static ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
 	if (!tmpContext.bEnableDrag)
 		windowFlags = windowFlags | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
@@ -277,7 +272,7 @@ void EntityBars::OnDraw()
 
 	static ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() + 7.0f);
 
-	ImGui::SetNextWindowSize(ImVec2(220.0f, 0.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(220.0f, 0.0f));
 	ImGui::SetNextWindowBgAlpha(0.5f);
 
 	if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
@@ -288,7 +283,7 @@ void EntityBars::OnDraw()
 		ShowBasicStats(iValues, fValues, progressBarSize);
 
 		if (target.abnormalStatList.iSize > -1)
-			ShowElementalBuildup(fValues, progressBarSize);
+			ShowElementalBuildup(progressBarSize);
 
 		if (target.weaponList.iSize > 0)
 			ShowWeaponsDurability(iValues, progressBarSize);
