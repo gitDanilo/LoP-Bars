@@ -5,8 +5,9 @@
 #include <fstream>
 #include <mutex>
 #include <optional>
+#include <windows.h>
 
-#define CONFIG_FILE_NAME "lop_bars.cfg"
+#define CONFIG_FILE_NAME L"lop_bars.cfg"
 
 class ConfigManager
 {
@@ -55,6 +56,7 @@ public:
 	std::optional<std::string> Get(const std::string& key, bool loadAndGet = false);
 	void Set(const std::string& key, const std::string& value, bool setAndSave = false);
 private:
+	std::wstring wsFilePath;
 	std::recursive_mutex configMutex;
 	std::fstream configFile;
 	std::unordered_map<std::string, std::string> configData;

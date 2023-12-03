@@ -7,7 +7,7 @@
 using namespace std::literals;
 
 #define SPLASH_FIRST_TIME_DURATION 20s
-#define SPLASH_DURATION 5s
+#define SPLASH_DURATION 10s
 
 class Splash : public ImGuiWindow
 {

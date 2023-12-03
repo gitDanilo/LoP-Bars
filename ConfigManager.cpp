@@ -2,8 +2,19 @@
 
 ConfigManager::ConfigManager() : configMutex(), configData()
 {
-
+	WCHAR tmp[MAX_PATH] = { 0 };
+	if (GetModuleFileNameW(0, tmp, MAX_PATH) == 0)
+	{
+		wsFilePath = CONFIG_FILE_NAME;
+	}
+	else
+	{
+		wsFilePath = std::wstring(tmp);
+		auto pos = wsFilePath.find_last_of('\\');
+		wsFilePath = wsFilePath.substr(0, pos + 1) + CONFIG_FILE_NAME;
+	}
 }
+
 
 ConfigManager::~ConfigManager()
 {
@@ -15,7 +26,7 @@ void ConfigManager::LoadData()
 {
 	std::scoped_lock _{ configMutex };
 
-	configFile.open(CONFIG_FILE_NAME, std::ios::in);
+	configFile.open(wsFilePath, std::ios::in);
 
 	if (!configFile)
 		return;
@@ -49,7 +60,7 @@ void ConfigManager::SaveData()
 {
 	std::scoped_lock _{ configMutex };
 
-	configFile.open(CONFIG_FILE_NAME, std::ios::out | std::ios::trunc);
+	configFile.open(wsFilePath, std::ios::out | std::ios::trunc);
 
 	if (!configFile)
 		return;
@@ -65,7 +76,7 @@ void ConfigManager::SaveData()
 std::optional<std::string> ConfigManager::Get(const std::string& key, bool loadAndGet)
 {
 	std::scoped_lock _{ configMutex };
-	
+
 	if (loadAndGet)
 		LoadData();
 
