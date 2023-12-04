@@ -68,8 +68,6 @@ bool EntityBars::OnInitialize()
 	//	return false;
 	//}
 
-	pFunction -= SET_LOCKON_FN_SIG_OFFSET;
-
 	pSetLockOnHook = std::make_unique<FunctionHook>(pFunction, &EntityBars::SetLockOnSystemData);
 	if (!pSetLockOnHook->Create())
 	{
@@ -104,29 +102,57 @@ void EntityBars::OnReset()
 
 void EntityBars::ShowBasicStats(int iValues[], float fValues[], const ImVec2& progressBarSize)
 {
+	// Read all buff values
+	static int iBuffValues[4]; // Max health, Max stamina, Max toughness, Max Stagger
+
+	memset(iBuffValues, 0, sizeof(int) * 4);
+
+	char* pBuff;
+	unsigned char t;
+	for (int i = 0; i < target.buffList.iSize; ++i)
+	{
+		pBuff = target.buffList.pList + (i * 0x18);
+		t = *(unsigned char*)(pBuff + 0x8);
+		switch (t)
+		{
+			case ENTITY_STATS::S_HEALTH_POINT_MAX:
+				iBuffValues[0] = *(int*)(pBuff + 0xC);
+				break;
+			case ENTITY_STATS::S_STAMINA_POINT_MAX:
+				iBuffValues[1] = *(int*)(pBuff + 0xC);
+				break;
+			case ENTITY_STATS::S_TOUGH_POINT_MAX:
+				iBuffValues[2] = *(int*)(pBuff + 0xC);
+				break;
+			case ENTITY_STATS::S_GROGGY_POINT_MAX:
+				iBuffValues[3] = *(int*)(pBuff + 0xC);
+				break;
+		}
+	}
+
 	ImGui::SeparatorText("Stats");
 
 	// Health
-	iValues[0] = *(int*)(target.pStatList + 0xC);
-	iValues[1] = *(int*)(target.pStatList + 0xD2C);
+	iValues[0] = *(int*)(target.statList.pList + 0xC);
+	iValues[1] = *(int*)(target.statList.pList + 0xD2C) + iBuffValues[0];
 	std::string sText = std::format("Health ({}/{})", iValues[0], iValues[1]);
 	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.4f, 0.0f, 0.0f, 1.0f));
 
 	// Stamina
-	iValues[0] = *(int*)(target.pStatList + 0x3C);
-	iValues[1] = *(int*)(target.pStatList + 0xD5C);
+	iValues[0] = *(int*)(target.statList.pList + 0x3C);
+	iValues[1] = *(int*)(target.statList.pList + 0xD5C) + iBuffValues[1];
 	sText = std::format("Stamina ({}/{})", iValues[0], iValues[1]);
 	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.0f, 0.4f, 0.0f, 1.0f));
 
 	// Tough
-	iValues[0] = *(int*)(target.pStatList + 0x18C);
-	iValues[1] = *(int*)(target.pStatList + 0xE1C);
+	iValues[0] = *(int*)(target.statList.pList + 0x18C);
+	iValues[1] = *(int*)(target.statList.pList + 0xE1C) + iBuffValues[2];
 	sText = std::format("Posture ({}/{})", iValues[0], iValues[1]);
 	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.5f, 0.0f, 0.5f, 1.0f));
 
 	// Stagger
-	iValues[0] = *(int*)(target.pStatList + 0x8DC); // Stagger point
-	iValues[1] = *(int*)(target.pStatList + 0xE7C); // Max stagger point
+	iValues[0] = *(int*)(target.statList.pList + 0x8DC); // Stagger point
+	iValues[1] = *(int*)(target.statList.pList + 0xE7C) + iBuffValues[3]; // Max stagger point
 	fValues[1] = *(float*)(target.pBase + 0xF60); // Stagger max duration
 	if (iValues[0] == 0 && fValues[1] > 1.0f)
 	{
@@ -145,7 +171,7 @@ void EntityBars::ShowElementalBuildup(const ImVec2& progressBarSize)
 {
 	size_t end = (target.abnormalStatList.iSize * 0x10);
 	uintptr_t itemAddr;
-	char e;
+	unsigned char e;
 	bool bIsDebuffActive;
 
 	memset(E_BAR_LIST, 0, sizeof(E_BAR) * E_TYPE::COUNT);
@@ -160,8 +186,10 @@ void EntityBars::ShowElementalBuildup(const ImVec2& progressBarSize)
 			continue;
 
 		E_BAR_LIST[e].fValues[0] = *(float*)(itemAddr + 0x258); // Current buildup
-		E_BAR_LIST[e].fValues[1] = (float)*(int*)(target.pStatList + E_RESIST_OFFSET[e]); // Max buildup
-		bIsDebuffActive = (E_BAR_LIST[e].fValues[0] == E_BAR_LIST[e].fValues[1]); // Check if debuff is active
+		E_BAR_LIST[e].fValues[1] = *(float*)(itemAddr + 0x254); // Max buildup
+		//E_BAR_LIST[e].fValues[1] = (float)*(int*)(target.statList.pList + E_RESIST_OFFSET[e]); // Max buildup
+		//bIsDebuffActive = (E_BAR_LIST[e].fValues[0] == E_BAR_LIST[e].fValues[1]); // Check if debuff is active
+		bIsDebuffActive = (E_BAR_LIST[e].fValues[1] == 0.0f); // Check if debuff is active
 
 		// Get Retain values if debuff is active
 		if (bIsDebuffActive)
@@ -184,7 +212,7 @@ void EntityBars::ShowElementalBuildup(const ImVec2& progressBarSize)
 	{
 		if (E_BAR_LIST[i].fValues[1] <= 0.0f)
 		{
-			E_BAR_LIST[i].fValues[1] = (float)*(int*)(target.pStatList + E_RESIST_OFFSET[i]); // Max buildup
+			E_BAR_LIST[i].fValues[1] = (float)*(int*)(target.statList.pList + E_RESIST_OFFSET[i]); // Max buildup
 			E_BAR_LIST[i].sBarText = std::format("{} ({}/{})"sv, E_NAME[i], 0.0f, (int)E_BAR_LIST[i].fValues[1]);
 		}
 		ImGui::ProgressBar(E_BAR_LIST[i].fValues[0] / E_BAR_LIST[i].fValues[1], progressBarSize, E_BAR_LIST[i].sBarText.c_str(), E_COLOR[i]);
@@ -232,24 +260,30 @@ void EntityBars::OnDraw()
 	if (target.pBase == nullptr)
 		return;
 
-	// Check if entity has any basic stats. If don't, then skip
-	uintptr_t ptr = *(uintptr_t*)(target.pBase + 0x848);
-	if (utility::IsBadReadPtr((void*)ptr))
+	// Get only objects that have their instigator reference as themselves
+	if (*(uintptr_t*)(target.pBase + 0xD8) == 0)
 		return;
 
-	target.pStatList = (char*)*(uintptr_t*)(*(uintptr_t*)(ptr + 0xE0) + 0x28);
+	target.bFaction = *(target.pBase + 0x760);
+	//if (target.bFaction <= ENTITY_FACTION::F_NEUTRAL || target.bFaction >= ENTITY_FACTION::F_MAX)
+	//	return;
 
-	// Check if entity has any abnormal stats
+	// Get entity's StatComponent
+	uintptr_t ptr = *(uintptr_t*)(target.pBase + 0x848);
+
+	// Filter out incomplete StatLists
+	target.statList = *(LIST_DATA*)(*(uintptr_t*)(ptr + 0xE0) + 0x28);
+	if (target.statList.iSize < 130)
+		return;
+
+	target.buffList = *(LIST_DATA*)(*(uintptr_t*)(ptr + 0xE0) + 0x38);
+
+	// Get entity's AbnormalComponent
 	ptr = *(uintptr_t*)(target.pBase + 0x850);
-	if (utility::IsBadReadPtr((void*)ptr))
-		target.abnormalStatList.iSize = -1;
-	else
-		target.abnormalStatList = *(LIST_DATA*)(ptr + 0xD0);
+	target.abnormalStatList = *(LIST_DATA*)(ptr + 0xD0);
 
-	// Check if weapon list is valid
+	// Get entity's weapon list
 	target.weaponList = *(LIST_DATA*)(target.pBase + 0xE0);
-	if (utility::IsBadReadPtr(target.weaponList.pList))
-		target.weaponList.iSize = -1;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
@@ -280,8 +314,8 @@ void EntityBars::OnDraw()
 
 	if (ImGui::Begin("Entity Bars", nullptr, windowFlags))
 	{
-		int iValues[2];
-		float fValues[2];
+		static int iValues[2];
+		static float fValues[2];
 
 		ShowBasicStats(iValues, fValues, progressBarSize);
 

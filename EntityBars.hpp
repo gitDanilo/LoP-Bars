@@ -30,7 +30,7 @@ struct MUTEX_WND_CONTEXT : WND_CONTEXT
 };
 
 // --------------------------------ELEMENTAL BUILDUP---------------------------------------
-enum E_TYPE : char
+enum E_TYPE : unsigned char
 {
 	UNKNOWN = 0,
 	FIRE,
@@ -73,6 +73,44 @@ struct E_BAR
 static E_BAR E_BAR_LIST[E_TYPE::COUNT] = { 0 };
 // ----------------------------------------------------------------------------------------
 
+enum ENTITY_FACTION : unsigned char
+{
+	F_NONE = 0,
+	F_PLAYER,
+	F_MONSTER,
+	F_ALLENEMY,
+	F_NEUTRAL,
+
+	F_PLAYER_HITENABLE,
+	F_MONSTER_PUPPET,
+	F_MONSTER_CARCASS,
+	F_MONSTER_REBORNER,
+	F_MONSTER_STALKER,
+	F_ENEMY_TOONLYPLAYER,
+	F_MONSTER_CARCASSNPUPPET,
+
+	F_MAX,
+	F_DEFAULT,
+};
+
+enum ENTITY_STATS : unsigned char
+{
+	S_NONE = 0,
+
+	S_HEALTH_POINT_CURRENT = 1,
+	S_STAMINA_POINT_CURRENT = 2,
+	S_TOUGH_POINT_CURRENT = 9,
+	S_GROGGY_POINT_CURRENT = 48,
+
+	S_HEALTH_POINT_MAX = 71,
+	S_STAMINA_POINT_MAX = 72,
+	S_TOUGH_POINT_MAX = 76,
+	S_GROGGY_POINT_MAX = 78,
+
+	S_MAX = 190,
+	S_DEFAULT = 191,
+};
+
 struct LIST_DATA
 {
 	char* pList;
@@ -81,8 +119,10 @@ struct LIST_DATA
 
 struct ENTITY_PTRS
 {
+	unsigned char bFaction;
 	char* pBase;
-	char* pStatList;
+	LIST_DATA statList;
+	LIST_DATA buffList;
 	LIST_DATA abnormalStatList;
 	LIST_DATA weaponList;
 };
@@ -107,7 +147,7 @@ static const short SET_LOCKON_FN_SIG[] =
 	0x4C, 0x39, 0x04, 0xC8,
 	0x75, -1,
 	0x48, 0x89, 0xBB, 0x98, 0x00, 0x00, 0x00,
-	0x66, 0x8B ,0x3D
+	0x66, 0x8B ,0x3D,
 };
 
 static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x0;
