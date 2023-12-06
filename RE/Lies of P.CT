@@ -1,0 +1,1929 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="45">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"enemy 1"</Description>
+      <LastState Value="15881" RealAddress="168A3558C"/>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>0</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>54</ID>
+      <Description>"enemy 1 attack speed"</Description>
+      <LastState Value="1000" RealAddress="168A365AC"/>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>102c</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>0</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>53</ID>
+      <Description>"test"</Description>
+      <LastState Value="000000013AC68740" RealAddress="1C2C38D08"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>108</Offset>
+        <Offset>840</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>0</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>47</ID>
+      <Description>"enemy 1 max health"</Description>
+      <LastState Value="15881" RealAddress="168A362AC"/>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>D2C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>0</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>35</ID>
+      <Description>"enemy 1 stagger"</Description>
+      <LastState Value="105" RealAddress="168A35E5C"/>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>8DC</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>0</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>48</ID>
+      <Description>"enemy 1 max stagger"</Description>
+      <LastState Value="105" RealAddress="168A363FC"/>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>E7C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>0</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>2</ID>
+      <Description>"enemy 2"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>8</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>36</ID>
+      <Description>"enemy 2 stagger"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>8DC</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>8</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>49</ID>
+      <Description>"enemy 2 max stagger"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>E7C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>8</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>3</ID>
+      <Description>"enemy 3"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>10</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>4</ID>
+      <Description>"enemy 4"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>18</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>5</ID>
+      <Description>"enemy 5"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>20</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>6</ID>
+      <Description>"enemy 6"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>28</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>7</ID>
+      <Description>"enemy 7"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>30</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>8</ID>
+      <Description>"enemy 8"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>38</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>9</ID>
+      <Description>"enemy 9"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>40</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>10</ID>
+      <Description>"enemy 10"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>48</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>11</ID>
+      <Description>"enemy 11"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>50</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>12</ID>
+      <Description>"enemy 12"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>58</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>13</ID>
+      <Description>"enemy 15"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>60</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>14</ID>
+      <Description>"enemy 16"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>68</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>15</ID>
+      <Description>"enemy 17"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>70</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>16</ID>
+      <Description>"enemy 18"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>78</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>17</ID>
+      <Description>"enemy 19"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>80</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>18</ID>
+      <Description>"enemy 20"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"LOP-Win64-Shipping.exe"+071AF5E8</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+        <Offset>838</Offset>
+        <Offset>D8</Offset>
+        <Offset>C0</Offset>
+        <Offset>88</Offset>
+        <Offset>40</Offset>
+        <Offset>A0</Offset>
+        <Offset>128</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>21</ID>
+      <Description>"test health pointer"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>200FC8BC0+838</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>45</ID>
+      <Description>"test MAX health pointer"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>200FC8BC0+838</Address>
+      <Offsets>
+        <Offset>D2C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>37</ID>
+      <Description>"test stagger pointer"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>200FC8BC0+838</Address>
+      <Offsets>
+        <Offset>8DC</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>40</ID>
+      <Description>"test fable art pointer"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>200FC8BC0+838</Address>
+      <Offsets>
+        <Offset>6c</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>26</ID>
+      <Description>"test health pointer"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>16CD12AE0+838</Address>
+      <Offsets>
+        <Offset>C</Offset>
+        <Offset>28</Offset>
+        <Offset>E0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>27</ID>
+      <Description>"X"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>Float</VariableType>
+      <Address>10247D560+f0</Address>
+      <Offsets>
+        <Offset>1C0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>29</ID>
+      <Description>"Y"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>Float</VariableType>
+      <Address>10247D560+f0</Address>
+      <Offsets>
+        <Offset>1C4</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>30</ID>
+      <Description>"Z"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>Float</VariableType>
+      <Address>10247D560+f0</Address>
+      <Offsets>
+        <Offset>1C8</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>31</ID>
+      <Description>"RETURNED MATRIX ADDR"</Description>
+      <LastState Value="0000000000000000" RealAddress="00F7E360"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>00F7E360</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>32</ID>
+      <Description>"LAST ENTITY ADDR"</Description>
+      <LastState Value="000075630617C0B1" RealAddress="00F7E220"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>00F7E1E0+40</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>55</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000145DC1ED0" RealAddress="15BCFB000"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>15BCFB000</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>56</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000141A3CFF0" RealAddress="145DC1ED0"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>0000000145DC1ED0</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>57</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000046050C88" RealAddress="468D8CA0"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>468D8CA0</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>58</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000090BAFC20" RealAddress="46050C88"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>0000000046050C88</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>59</ID>
+      <Description>"No description"</Description>
+      <LastState Value="3E0D4FDF3E0D4FDF" RealAddress="00F7D270"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>00F7D270</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>60</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000090BAFC20" RealAddress="46050C88"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>0000000046050C88</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>61</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000090C13970" RealAddress="90BAFC20"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>0000000090BAFC20</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>62</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000000000000" RealAddress="00F7D500"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>00F7D500</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>63</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000090BAFC20" RealAddress="46050C88"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>46050C88</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>64</ID>
+      <Description>"No description"</Description>
+      <LastState Value="0000000090C13970" RealAddress="90BAFC20"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>8 Bytes</VariableType>
+      <Address>0000000090BAFC20</Address>
+    </CheatEntry>
+  </CheatEntries>
+  <CheatCodes>
+    <CodeEntry>
+      <Description>SETTER</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1ABE8AC</AddressString>
+      <Before>
+        <Byte>3B</Byte>
+        <Byte>C1</Byte>
+        <Byte>0F</Byte>
+        <Byte>4E</Byte>
+        <Byte>C1</Byte>
+      </Before>
+      <Actual>
+        <Byte>89</Byte>
+        <Byte>47</Byte>
+        <Byte>0C</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>CF</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>LAST OFFSET ?</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1B3D596</AddressString>
+      <Before>
+        <Byte>2D</Byte>
+        <Byte>D4</Byte>
+        <Byte>D3</Byte>
+        <Byte>31</Byte>
+        <Byte>05</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>AB</Byte>
+        <Byte>38</Byte>
+        <Byte>08</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>74</Byte>
+        <Byte>2F</Byte>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>8D</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>ON LOCK</Description>
+      <AddressString>LOP-Win64-Shipping.exe+3A6B7E0</AddressString>
+      <Before>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>5C</Byte>
+        <Byte>24</Byte>
+        <Byte>10</Byte>
+      </Actual>
+      <After>
+        <Byte>57</Byte>
+        <Byte>48</Byte>
+        <Byte>83</Byte>
+        <Byte>EC</Byte>
+        <Byte>20</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>LOCK TARGET COMPONENT</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE2986</AddressString>
+      <Before>
+        <Byte>E8</Byte>
+        <Byte>FA</Byte>
+        <Byte>D1</Byte>
+        <Byte>60</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>A5</Byte>
+        <Byte>2B</Byte>
+        <Byte>FE</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>4C</Byte>
+        <Byte>8B</Byte>
+        <Byte>03</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>LOCK SYSTEM FUNCTION</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE6C09</AddressString>
+      <Before>
+        <Byte>8B</Byte>
+        <Byte>CB</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>D5</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>C2</Byte>
+        <Byte>BC</Byte>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>47</Byte>
+        <Byte>08</Byte>
+        <Byte>48</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>CALLS CAMERA LOCK ON WITH PLAYER BASE</Description>
+      <AddressString>LOP-Win64-Shipping.exe+D4A5E62</AddressString>
+      <Before>
+        <Byte>89</Byte>
+        <Byte>C2</Byte>
+        <Byte>4C</Byte>
+        <Byte>89</Byte>
+        <Byte>F1</Byte>
+      </Before>
+      <Actual>
+        <Byte>41</Byte>
+        <Byte>FF</Byte>
+        <Byte>90</Byte>
+        <Byte>20</Byte>
+        <Byte>06</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>C2</Byte>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>CALLS SOME FUNCTION THAT CHANGES COORDINATES.... CAMERA OR PLAYER ?</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE6C1E</AddressString>
+      <Before>
+        <Byte>CC</Byte>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>43</Byte>
+        <Byte>34</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>9D</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>4C</Byte>
+        <Byte>63</Byte>
+        <Byte>76</Byte>
+        <Byte>08</Byte>
+        <Byte>41</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>RCX IS RECEIVING THE PLAYER COORDS</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE4892</AddressString>
+      <Before>
+        <Byte>E8</Byte>
+        <Byte>3E</Byte>
+        <Byte>B4</Byte>
+        <Byte>60</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>88</Byte>
+        <Byte>F0</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>85</Byte>
+        <Byte>C9</Byte>
+        <Byte>74</Byte>
+        <Byte>26</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>WE HAVE THE PLAYER COORDS HERE AND THIS IS CALLING THE LOCK</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE490C</AddressString>
+      <Before>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>20</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>CF</Byte>
+        <Byte>11</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>54</Byte>
+        <Byte>24</Byte>
+        <Byte>30</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>SOME CALCS WITH TAN</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE4919</AddressString>
+      <Before>
+        <Byte>24</Byte>
+        <Byte>30</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>CE</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>12</Byte>
+        <Byte>31</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>54</Byte>
+        <Byte>24</Byte>
+        <Byte>60</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>THIS IS ACCESING THE ENTITY LIST</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE4976</AddressString>
+      <Before>
+        <Byte>25</Byte>
+        <Byte>6A</Byte>
+        <Byte>3C</Byte>
+        <Byte>C5</Byte>
+        <Byte>04</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>0C</Byte>
+        <Byte>C2</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>4C</Byte>
+        <Byte>24</Byte>
+        <Byte>30</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call qword ptr [r8+00000620]</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE2994</AddressString>
+      <Before>
+        <Byte>8B</Byte>
+        <Byte>D0</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>CB</Byte>
+      </Before>
+      <Actual>
+        <Byte>41</Byte>
+        <Byte>FF</Byte>
+        <Byte>90</Byte>
+        <Byte>20</Byte>
+        <Byte>06</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>D0</Byte>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call LOP-Win64-Shipping.exe+1CE6A50</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE49D9</AddressString>
+      <Before>
+        <Byte>78</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>72</Byte>
+        <Byte>20</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>4C</Byte>
+        <Byte>8B</Byte>
+        <Byte>6C</Byte>
+        <Byte>24</Byte>
+        <Byte>70</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>I HAD A BREAKPOINT HERE, THE NEXT CALL NEEDS TO HAPPEN FOR THE LOCK</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE49C3</AddressString>
+      <Before>
+        <Byte>00</Byte>
+        <Byte>90</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>10</Byte>
+      </Before>
+      <Actual>
+        <Byte>4C</Byte>
+        <Byte>8D</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>70</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>CE</Byte>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>THIS JUMP TRIGGERS IF IT IS THE WRONG ENTITY</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE4B5F</AddressString>
+      <Before>
+        <Byte>48</Byte>
+        <Byte>3B</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>30</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>85</Byte>
+        <Byte>5B</Byte>
+        <Byte>FE</Byte>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>5D</Byte>
+        <Byte>88</Byte>
+        <Byte>4D</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>! THIS GETS CALLED WHEN TOGGLING ON TARGET</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE47F0</AddressString>
+      <Before>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+        <Byte>CC</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>C4</Byte>
+      </Actual>
+      <After>
+        <Byte>55</Byte>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>68</Byte>
+        <Byte>A8</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>! THIS GETS CALLED WHEN TARGET IS ALREADY ON AND SWITCHING TARGETS</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE506C</AddressString>
+      <Before>
+        <Byte>80</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>DF</Byte>
+        <Byte>19</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>78</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>SKIPPING THIS PREVENTS LOCK</Description>
+      <AddressString>LOP-Win64-Shipping.exe+DBD2FD9</AddressString>
+      <Before>
+        <Byte>B8</Byte>
+        <Byte>D0</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>C2</Byte>
+        <Byte>19</Byte>
+        <Byte>0A</Byte>
+        <Byte>F4</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>85</Byte>
+        <Byte>DB</Byte>
+        <Byte>74</Byte>
+        <Byte>75</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>Change of call LOP-Win64-Shipping.exe+1A5D710</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1C74C68</AddressString>
+      <Before>
+        <Byte>48</Byte>
+        <Byte>89</Byte>
+        <Byte>5C</Byte>
+        <Byte>24</Byte>
+        <Byte>20</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>A3</Byte>
+        <Byte>8A</Byte>
+        <Byte>DE</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>4C</Byte>
+        <Byte>24</Byte>
+        <Byte>40</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>GET ENTITY COORDINATES</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE600F</AddressString>
+      <Before>
+        <Byte>48</Byte>
+        <Byte>85</Byte>
+        <Byte>C0</Byte>
+        <Byte>74</Byte>
+        <Byte>2B</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>88</Byte>
+        <Byte>C0</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>20</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>LOCKS THE PLAYER TARGET ANGLE</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1C74BCC</AddressString>
+      <Before>
+        <Byte>8B</Byte>
+        <Byte>C8</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>D3</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>5F</Byte>
+        <Byte>EB</Byte>
+        <Byte>06</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>C6</Byte>
+        <Byte>86</Byte>
+        <Byte>B0</Byte>
+        <Byte>0C</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>GETS CALLED WHEN UNLOCKING</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1C74CEC</AddressString>
+      <Before>
+        <Byte>89</Byte>
+        <Byte>10</Byte>
+        <Byte>02</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>6F</Byte>
+        <Byte>E0</Byte>
+        <Byte>E4</Byte>
+        <Byte>FF</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>8F</Byte>
+        <Byte>60</Byte>
+        <Byte>05</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>LActMgrComponent</Description>
+      <AddressString>LOP-Win64-Shipping.exe+CE97910</AddressString>
+      <Before>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+        <Byte>0F</Byte>
+        <Byte>1F</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>49</Byte>
+        <Byte>89</Byte>
+        <Byte>E3</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>81</Byte>
+        <Byte>EC</Byte>
+        <Byte>88</Byte>
+        <Byte>00</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>RENDERS X ON THE LOCKED TARGET</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE39DA</AddressString>
+      <Before>
+        <Byte>87</Byte>
+        <Byte>E0</Byte>
+        <Byte>01</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>E8</Byte>
+        <Byte>B1</Byte>
+        <Byte>78</Byte>
+        <Byte>FD</Byte>
+        <Byte>FE</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>5C</Byte>
+        <Byte>24</Byte>
+        <Byte>70</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>ONLY THE TARGET EXECUTES THIS</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1CE4AAF</AddressString>
+      <Before>
+        <Byte>0F</Byte>
+        <Byte>29</Byte>
+        <Byte>4C</Byte>
+        <Byte>24</Byte>
+        <Byte>50</Byte>
+      </Before>
+      <Actual>
+        <Byte>44</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>C0</Byte>
+      </Actual>
+      <After>
+        <Byte>66</Byte>
+        <Byte>0F</Byte>
+        <Byte>73</Byte>
+        <Byte>D9</Byte>
+        <Byte>08</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>TRIMS HEALTH IF NECESSARY</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1B3C170</AddressString>
+      <Before>
+        <Byte>8E</Byte>
+        <Byte>38</Byte>
+        <Byte>08</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>4F</Byte>
+        <Byte>F8</Byte>
+      </Actual>
+      <After>
+        <Byte>C6</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>20</Byte>
+        <Byte>01</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>RECEIVING MAX HP VALUE</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1ABD2C1</AddressString>
+      <Before>
+        <Byte>8B</Byte>
+        <Byte>46</Byte>
+        <Byte>10</Byte>
+        <Byte>EB</Byte>
+        <Byte>04</Byte>
+      </Before>
+      <Actual>
+        <Byte>41</Byte>
+        <Byte>8B</Byte>
+        <Byte>46</Byte>
+        <Byte>0C</Byte>
+      </Actual>
+      <After>
+        <Byte>03</Byte>
+        <Byte>C7</Byte>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>7C</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>OVERHEAT BUILDUP SPOT 1</Description>
+      <AddressString>LOP-Win64-Shipping.exe+372D3B8</AddressString>
+      <Before>
+        <Byte>20</Byte>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>43</Byte>
+        <Byte>20</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>4B</Byte>
+        <Byte>20</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>28</Byte>
+        <Byte>C1</Byte>
+        <Byte>0F</Byte>
+        <Byte>C6</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>OVERHEAT BUILDUP SPOT 2</Description>
+      <AddressString>LOP-Win64-Shipping.exe+24DF1E6</AddressString>
+      <Before>
+        <Byte>88</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>43</Byte>
+        <Byte>20</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>40</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>WRITES TO OVERHEAT BUILDUP</Description>
+      <AddressString>LOP-Win64-Shipping.exe+36A4714</AddressString>
+      <Before>
+        <Byte>48</Byte>
+        <Byte>8D</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>38</Byte>
+      </Before>
+      <Actual>
+        <Byte>41</Byte>
+        <Byte>0F</Byte>
+        <Byte>11</Byte>
+        <Byte>47</Byte>
+        <Byte>20</Byte>
+      </Actual>
+      <After>
+        <Byte>48</Byte>
+        <Byte>3B</Byte>
+        <Byte>C7</Byte>
+        <Byte>74</Byte>
+        <Byte>65</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>SET BUILDUP VALUE</Description>
+      <AddressString>LOP-Win64-Shipping.exe+1D79F92</AddressString>
+      <Before>
+        <Byte>01</Byte>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>5D</Byte>
+        <Byte>D6</Byte>
+      </Before>
+      <Actual>
+        <Byte>FF</Byte>
+        <Byte>50</Byte>
+        <Byte>10</Byte>
+      </Actual>
+      <After>
+        <Byte>F3</Byte>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>43</Byte>
+        <Byte>20</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>THE FUNCTION ABOVE GOT THE FUNCTION NAME TO RESOLVE IT'S ADDR</Description>
+      <AddressString>XINPUT1_3.dll+AEFED</AddressString>
+      <Before>
+        <Byte>E8</Byte>
+        <Byte>73</Byte>
+        <Byte>A1</Byte>
+        <Byte>3A</Byte>
+        <Byte>00</Byte>
+      </Before>
+      <Actual>
+        <Byte>0F</Byte>
+        <Byte>10</Byte>
+        <Byte>00</Byte>
+      </Actual>
+      <After>
+        <Byte>0F</Byte>
+        <Byte>29</Byte>
+        <Byte>44</Byte>
+        <Byte>24</Byte>
+        <Byte>40</Byte>
+      </After>
+    </CodeEntry>
+    <CodeEntry>
+      <Description>GET STRING</Description>
+      <AddressString>XINPUT1_3.dll+45919A</AddressString>
+      <Before>
+        <Byte>3C</Byte>
+        <Byte>08</Byte>
+        <Byte>00</Byte>
+        <Byte>75</Byte>
+        <Byte>F6</Byte>
+      </Before>
+      <Actual>
+        <Byte>48</Byte>
+        <Byte>8B</Byte>
+        <Byte>0F</Byte>
+      </Actual>
+      <After>
+        <Byte>41</Byte>
+        <Byte>B8</Byte>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+        <Byte>FF</Byte>
+      </After>
+    </CodeEntry>
+  </CheatCodes>
+  <UserdefinedSymbols/>
+  <DisassemblerComments>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1ABD2C1</Address>
+      <Comment>RECEIVING MAX HP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1ABD2C5</Address>
+      <Comment>EDI = BONUS HP
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1ABDE3B</Address>
+      <Comment>CALLING THIS WHEN OVERHEAT GOES AWAY ?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1ABE8AC</Address>
+      <Comment>SETTER
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1B3C170</Address>
+      <Comment>TRIMS HEALTH IF NECESSARY, EAX = MAX HEALTH
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1B3D5DE</Address>
+      <Comment>CALL THE SETTER FUNCTION
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1C37B26</Address>
+      <Comment>break here
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1C749CC</Address>
+      <Comment>SKIP THIS = CRASH
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1C74BC1</Address>
+      <Comment>SKIP THIS = CRASH
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1C74BCC</Address>
+      <Comment>LOCKS THE PLAYER TARGET ANGLE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1C74BDF</Address>
+      <Comment>SKIP THIS = CRASH
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1C74CEC</Address>
+      <Comment>THIS GETS CALLED WHEN UNLOCKING...
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE2986</Address>
+      <Comment>LOCK TARGET COMPONENT
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE2994</Address>
+      <Comment>this call is getting the base ptr
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE3757</Address>
+      <Comment>SKIP THIS = CRASH
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE39DA</Address>
+      <Comment>DRAWS THE X ON THE TARGET
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE47F0</Address>
+      <Comment>TOGGLE ON TARGET LOCK
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4892</Address>
+      <Comment>RCX IS RECEIVING THE PLAYER COORDS
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE490C</Address>
+      <Comment>GET ENTITIES COORDINATE (LOOP FUNCTION)
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4919</Address>
+      <Comment>SOME CALCS WITH TAN
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4976</Address>
+      <Comment>ACCESSING THE ENTITY LIST
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE49C0</Address>
+      <Comment>LOOP BEGIN, RDX = BASE PTR
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE49D9</Address>
+      <Comment>THIS CALLS THE LOCK FUNCTION
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4A4F</Address>
+      <Comment>SOME CALC WITH 360
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4A62</Address>
+      <Comment>SOME CALC...
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4A75</Address>
+      <Comment>SOME CALC WITH POW
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4A85</Address>
+      <Comment>TAKE THIS JMP IF NOT TARGET!
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4AAF</Address>
+      <Comment>ONLY THE TARGET EXECUTES THIS
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4AC5</Address>
+      <Comment>TAKE THIS WHEN NOT TARGET ?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4AD3</Address>
+      <Comment>??? -&gt; GETS CALLED WHEN PTR IS THE TARGET
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4AE6</Address>
+      <Comment>MALLOC OR MEMCPY -&gt; GETS CALLED WHEN PTR IS THE TARGET
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4B12</Address>
+      <Comment>TAKE THIS WHEN NOT TARGET ?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4B42</Address>
+      <Comment>ALLOC
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4B47</Address>
+      <Comment>GET THE CURRENT PTR AND INC
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4B5F</Address>
+      <Comment>TAKE THIS JMP IF NOT THE END OF THE LIST
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4BB5</Address>
+      <Comment>SAVES TARGET COORD ADDR
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE4C6B</Address>
+      <Comment>ALLOC
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE600F</Address>
+      <Comment>GETS ENTITY COORDINATES
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1CE6C09</Address>
+      <Comment>LOCK SYSTEM FUNCTION
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D79CEF</Address>
+      <Comment>RCX HOLDS THE POINTER TO THE BUILDUP PROGRESS
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D79CF2</Address>
+      <Comment>CALLING THE FUNCTION TO SET THE BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D79F30</Address>
+      <Comment>LVL1: RCX HAS THE ADDR OF THE BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D79F84</Address>
+      <Comment>RCX = NEW BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D79F92</Address>
+      <Comment>SET BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B383</Address>
+      <Comment>SEEMS TO BE CALCULATING ONLY THE DMG REDUCTION (XMM0)
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B39A</Address>
+      <Comment>XMM1 = NEW BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B3A6</Address>
+      <Comment>DIFF BETWEEN NEW VALUE AND THE CURRENT
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B3AA</Address>
+      <Comment>XMM0 = DMG/HEAL PORCENTAGE VALUE ?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B3AE</Address>
+      <Comment>XMM1 = BUILDUP VALUE AFTER REDUCTION
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B3B6</Address>
+      <Comment>XMM3 = NEW BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B3C6</Address>
+      <Comment>RETURNS AN ADDR ON RAX
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B3D7</Address>
+      <Comment>CANVAS PANEL SLOT
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B3FA</Address>
+      <Comment>RDX = BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D7B402</Address>
+      <Comment>THIS CALLS THE FUNCTION TO UPDATE THE BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+1D8C3F9</Address>
+      <Comment>ALLOC
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+24DF1E6</Address>
+      <Comment>OVERHEAT BUILDUP SPOT 2
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+36A4630</Address>
+      <Comment>LVL0
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+36A463D</Address>
+      <Comment>BUILDUP VALUE = RDX
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+36A4645</Address>
+      <Comment>BUILDUP VALUE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+36A4714</Address>
+      <Comment>WRITES TO OVERHEAT BUILDUP
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+372D3B8</Address>
+      <Comment>OVERHEAT BUILDUP SPOT 1
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+39677B0</Address>
+      <Comment>CAMERA COMPONENT
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+39677BD</Address>
+      <Comment>ACTOR COMPONENT
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+39677E4</Address>
+      <Comment>ACTOR COMPONENT
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+39686FE</Address>
+      <Comment>TAKES THIS JUMP
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+3968745</Address>
+      <Comment>TAKES THIS JUMP
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+396879F</Address>
+      <Comment>TAKES THIS JUMP
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+396882A</Address>
+      <Comment>TAKES THIS JUMP
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+396887A</Address>
+      <Comment>CHECK RSI IT HOLDS A BASE POINTER
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+3A6B7E0</Address>
+      <Comment>THIS IS ACCESING THE ENTITY BASE
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+3A6B887</Address>
+      <Comment>TAKES THIS JUMP
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+DBD1616</Address>
+      <Comment>THIS CALLS THE LOCK FUNCTION
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+DBD2EF0</Address>
+      <Comment>LOCK FUNCTION BEGIN
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+DBD2FA3</Address>
+      <Comment>this is using entity base pointer (loop function)
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+DBD2FAE</Address>
+      <Comment>TAKE THIS IF SKIPPING TARGET LOCK
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+DBD2FBB</Address>
+      <Comment>THIS ACCESS A 2D FLOAT ARRAY
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+DBD2FD9</Address>
+      <Comment>SKIP THIS PREVENTS LOCK
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+DBD305D</Address>
+      <Comment>BEGIN SKIP TARGET LOCK
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"LOP-Win64-Shipping.exe"+F7D129B</Address>
+      <Comment>GETTING CALLED WHEN OVERHEAT GOES AWAY ?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"XINPUT1_3.dll"+AEFED</Address>
+      <Comment>RAX = FUNCTION NAME
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"XINPUT1_3.dll"+AF0D0</Address>
+      <Comment>RAX = N
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"XINPUT1_3.dll"+4B8486</Address>
+      <Comment>ENTER CRITICAL SECTION
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"XINPUT1_3.dll"+4B8591</Address>
+      <Comment>LEAVE CRITICAL SECTION
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"XINPUT1_3.dll"+4C0E21</Address>
+      <Comment>MAYBE ?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"XINPUT1_3.dll"+4C18AF</Address>
+      <Comment>ENTER CRITICAL SECTION
+</Comment>
+    </DisassemblerComment>
+  </DisassemblerComments>
+</CheatTable>

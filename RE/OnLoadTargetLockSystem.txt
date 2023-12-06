@@ -1,0 +1,14 @@
+7F 2C                : jg 14DB60EAB
+48 89 C1             : mov rcx,rax
+48 8B 42 30          : mov rax,[rdx+30]
+4C 39 04 C8          : cmp [rax+rcx*8],r8
+75 1F                : jne 14DB60EAB
+48 89 BB 98 00 00 00 : mov [rbx+00000098],rdi
+66 8B 3D ?? ?? ?? ?? : mov di,[157F4D673]
+21 3D ?? ?? ?? ??    : and [15742208D],edi
+
+7F 2C 48 89 C1 48 8B 42 30 4C 39 04 C8 75 1F 48 89 BB ?? ?? ?? ?? 66 8B 3D ?? ?? ?? ?? 21 3D
+
+(void)(uint64_t rcx, void* pLockOnSystem, uint64_t r8)
+
+Signature offset = +2D

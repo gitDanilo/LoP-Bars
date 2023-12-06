@@ -1,6 +1,5 @@
 LOP-Win64-Shipping.exe+DB60E4B - 0F1F 44 00 00         - nop dword ptr [rax+rax+00]
-LOP-Win64-Shipping.exe+DB60E50 - 48 89 5C 24 08        - mov [rsp+08],rbx { LOCKON OBJ REF = RDX
- }
+LOP-Win64-Shipping.exe+DB60E50 - 48 89 5C 24 08        - mov [rsp+08],rbx { LOCKON OBJ REF = RDX }
 LOP-Win64-Shipping.exe+DB60E55 - 57                    - push rdi
 LOP-Win64-Shipping.exe+DB60E56 - 48 83 EC 20           - sub rsp,20 { 32 }
 LOP-Win64-Shipping.exe+DB60E5A - 48 89 D7              - mov rdi,rdx

@@ -1,0 +1,14 @@
+ADDR = [LAbnormalComponent+D0]
+ADDR = [ADDR+410]
+ADDR = ADDR+240+18
+
+B+240+18(+258)
+
+LHUD = 137690B00
+LPCController = DA16B380
+	LPCCharacter = 3ADD2EC0
+		LStatComponent = 13842BF40
+			LStatList = 13852F6D0
+                  StatList = 9506BFA0
+                  StatGaugeList = 9506E2A0
+		LAbnormalComponent = C7F90800

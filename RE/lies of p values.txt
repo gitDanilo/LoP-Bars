@@ -1,0 +1,6 @@
+15881 - health attacking dummy
+105 - stagger bar attacking dummy
+
+19314 - health static dummy
+
+basic enemy health = 1300

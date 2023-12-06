@@ -1,0 +1,16 @@
+LVL:0
+
+PTR+20 = FLOAT
+PTR = RSP
+================
+LVL: 1
+
+PTR+10 = PTR
+PTR+10 = PTR
+RCX = PTR
+================
+LVL: 2
+
+PTR+8 = PTR
+
+================

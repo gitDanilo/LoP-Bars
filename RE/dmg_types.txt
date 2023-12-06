@@ -1,0 +1,3 @@
+00987E85 = acid
+0098E262 = fire
+0098E243 = eletric
