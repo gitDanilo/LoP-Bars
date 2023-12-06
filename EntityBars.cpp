@@ -130,7 +130,7 @@ void EntityBars::ShowBasicStats(int iValues[], float fValues[], const ImVec2& pr
 		}
 	}
 
-	static int fMulStatValues[4];
+	static float fMulStatValues[4];
 
 	memset(fMulStatValues, 0, sizeof(float) * 4);
 
@@ -141,16 +141,16 @@ void EntityBars::ShowBasicStats(int iValues[], float fValues[], const ImVec2& pr
 		switch (t)
 		{
 			case ENTITY_STATS::S_HEALTH_POINT_MAX:
-				fMulStatValues[0] = *(int*)(ptr + 0xC) / 1000.0f;
+				fMulStatValues[0] = *(int*)(ptr + 0xC) / 10000.0f;
 				break;
 			case ENTITY_STATS::S_STAMINA_POINT_MAX:
-				fMulStatValues[1] = *(int*)(ptr + 0xC) / 1000.0f;
+				fMulStatValues[1] = *(int*)(ptr + 0xC) / 10000.0f;
 				break;
 			case ENTITY_STATS::S_TOUGH_POINT_MAX:
-				fMulStatValues[2] = *(int*)(ptr + 0xC) / 1000.0f;
+				fMulStatValues[2] = *(int*)(ptr + 0xC) / 10000.0f;
 				break;
 			case ENTITY_STATS::S_GROGGY_POINT_MAX:
-				fMulStatValues[3] = *(int*)(ptr + 0xC) / 1000.0f;
+				fMulStatValues[3] = *(int*)(ptr + 0xC) / 10000.0f;
 				break;
 		}
 	}
