@@ -123,6 +123,7 @@ struct ENTITY_PTRS
 	char* pBase;
 	LIST_DATA statList;
 	LIST_DATA buffList;
+	LIST_DATA maxStatMulList;
 	LIST_DATA abnormalStatList;
 	LIST_DATA weaponList;
 };
@@ -147,7 +148,7 @@ static const short SET_LOCKON_FN_SIG[] =
 	0x4C, 0x39, 0x04, 0xC8,
 	0x75, -1,
 	0x48, 0x89, 0xBB, 0x98, 0x00, 0x00, 0x00,
-	0x66, 0x8B ,0x3D,
+	//0x66, 0x8B ,0x3D,
 };
 
 static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x0;

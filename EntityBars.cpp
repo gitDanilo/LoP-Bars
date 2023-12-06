@@ -107,25 +107,50 @@ void EntityBars::ShowBasicStats(int iValues[], float fValues[], const ImVec2& pr
 
 	memset(iBuffValues, 0, sizeof(int) * 4);
 
-	char* pBuff;
+	char* ptr;
 	unsigned char t;
 	for (int i = 0; i < target.buffList.iSize; ++i)
 	{
-		pBuff = target.buffList.pList + (i * 0x18);
-		t = *(unsigned char*)(pBuff + 0x8);
+		ptr = target.buffList.pList + (i * 0x18);
+		t = *(unsigned char*)(ptr + 0x8);
 		switch (t)
 		{
 			case ENTITY_STATS::S_HEALTH_POINT_MAX:
-				iBuffValues[0] = *(int*)(pBuff + 0xC);
+				iBuffValues[0] = *(int*)(ptr + 0xC);
 				break;
 			case ENTITY_STATS::S_STAMINA_POINT_MAX:
-				iBuffValues[1] = *(int*)(pBuff + 0xC);
+				iBuffValues[1] = *(int*)(ptr + 0xC);
 				break;
 			case ENTITY_STATS::S_TOUGH_POINT_MAX:
-				iBuffValues[2] = *(int*)(pBuff + 0xC);
+				iBuffValues[2] = *(int*)(ptr + 0xC);
 				break;
 			case ENTITY_STATS::S_GROGGY_POINT_MAX:
-				iBuffValues[3] = *(int*)(pBuff + 0xC);
+				iBuffValues[3] = *(int*)(ptr + 0xC);
+				break;
+		}
+	}
+
+	static int fMulStatValues[4];
+
+	memset(fMulStatValues, 0, sizeof(float) * 4);
+
+	for (int i = 0; i < target.maxStatMulList.iSize; ++i)
+	{
+		ptr = target.maxStatMulList.pList + (i * 0x18);
+		t = *(unsigned char*)(ptr + 0x8);
+		switch (t)
+		{
+			case ENTITY_STATS::S_HEALTH_POINT_MAX:
+				fMulStatValues[0] = *(int*)(ptr + 0xC) / 1000.0f;
+				break;
+			case ENTITY_STATS::S_STAMINA_POINT_MAX:
+				fMulStatValues[1] = *(int*)(ptr + 0xC) / 1000.0f;
+				break;
+			case ENTITY_STATS::S_TOUGH_POINT_MAX:
+				fMulStatValues[2] = *(int*)(ptr + 0xC) / 1000.0f;
+				break;
+			case ENTITY_STATS::S_GROGGY_POINT_MAX:
+				fMulStatValues[3] = *(int*)(ptr + 0xC) / 1000.0f;
 				break;
 		}
 	}
@@ -133,20 +158,27 @@ void EntityBars::ShowBasicStats(int iValues[], float fValues[], const ImVec2& pr
 	ImGui::SeparatorText("Stats");
 
 	// Health
+	//*(int*)(target.statList.pList + 0xC) = 1;
 	iValues[0] = *(int*)(target.statList.pList + 0xC);
 	iValues[1] = *(int*)(target.statList.pList + 0xD2C) + iBuffValues[0];
+	if (fMulStatValues[0] > 0.0f)
+		iValues[1] *= fMulStatValues[0];
 	std::string sText = std::format("Health ({}/{})", iValues[0], iValues[1]);
 	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.4f, 0.0f, 0.0f, 1.0f));
 
 	// Stamina
 	iValues[0] = *(int*)(target.statList.pList + 0x3C);
 	iValues[1] = *(int*)(target.statList.pList + 0xD5C) + iBuffValues[1];
+	if (fMulStatValues[1] > 0.0f)
+		iValues[1] *= fMulStatValues[1];
 	sText = std::format("Stamina ({}/{})", iValues[0], iValues[1]);
 	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.0f, 0.4f, 0.0f, 1.0f));
 
 	// Tough
 	iValues[0] = *(int*)(target.statList.pList + 0x18C);
 	iValues[1] = *(int*)(target.statList.pList + 0xE1C) + iBuffValues[2];
+	if (fMulStatValues[2] > 0.0f)
+		iValues[1] *= fMulStatValues[2];
 	sText = std::format("Posture ({}/{})", iValues[0], iValues[1]);
 	ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.5f, 0.0f, 0.5f, 1.0f));
 
@@ -162,6 +194,8 @@ void EntityBars::ShowBasicStats(int iValues[], float fValues[], const ImVec2& pr
 	}
 	else if (iValues[1] > 0)
 	{
+		if (fMulStatValues[3] > 0.0f)
+			iValues[1] *= fMulStatValues[3];
 		sText = std::format("Stagger ({}/{})", iValues[0], iValues[1]);
 		ImGui::ProgressBar((float)iValues[0] / (float)iValues[1], progressBarSize, sText.c_str(), ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 	}
@@ -227,7 +261,7 @@ void EntityBars::ShowWeaponsDurability(int iValues[], const ImVec2& progressBarS
 
 	for (int i = 0; i < target.weaponList.iSize; ++i)
 	{
-		pWeapon = (char*)*(uintptr_t*)(target.weaponList.pList + (i * sizeof(void*)));
+		pWeapon = (char*)*(uintptr_t*)(target.weaponList.pList + 0x30 + (i * 0x40));
 		iValues[0] = *(int*)(pWeapon + 0x308);
 
 		if (iValues[0] < 0)
@@ -261,12 +295,13 @@ void EntityBars::OnDraw()
 		return;
 
 	// Get only objects that have their instigator reference as themselves
-	if (*(uintptr_t*)(target.pBase + 0xD8) == 0)
+	if ((void*)*(uintptr_t*)(target.pBase + 0xD8) != target.pBase)
 		return;
 
 	target.bFaction = *(target.pBase + 0x760);
-	//if (target.bFaction <= ENTITY_FACTION::F_NEUTRAL || target.bFaction >= ENTITY_FACTION::F_MAX)
-	//	return;
+
+	// Quick offset fix for 1.2.0
+	target.pBase -= 0x10;
 
 	// Get entity's StatComponent
 	uintptr_t ptr = *(uintptr_t*)(target.pBase + 0x848);
@@ -278,12 +313,15 @@ void EntityBars::OnDraw()
 
 	target.buffList = *(LIST_DATA*)(*(uintptr_t*)(ptr + 0xE0) + 0x38);
 
+	target.maxStatMulList = *(LIST_DATA*)(*(uintptr_t*)(ptr + 0xE0) + 0x58);
+
 	// Get entity's AbnormalComponent
 	ptr = *(uintptr_t*)(target.pBase + 0x850);
 	target.abnormalStatList = *(LIST_DATA*)(ptr + 0xD0);
 
-	// Get entity's weapon list
-	target.weaponList = *(LIST_DATA*)(target.pBase + 0xE0);
+	// Get entity's EquipmentComponent
+	ptr = *(uintptr_t*)(target.pBase + 0x858);
+	target.weaponList = *(LIST_DATA*)(ptr + 0xF0);
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
