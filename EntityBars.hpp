@@ -8,6 +8,11 @@
 #include "imgui.h"
 #include "ImGuiWindow.hpp"
 #include "utility/FunctionHook.hpp"
+#include "Game/Matrix.h"
+#include "Game/Vector2D.h"
+#include "Game/Vector.h"
+#include "Game/Rotator.h"
+#include "Game/IntRect.h"
 
 using namespace std::string_view_literals;
 
@@ -128,6 +133,18 @@ struct ENTITY_PTRS
 	LIST_DATA weaponList;
 };
 
+struct POV
+{
+	FVector location;
+	FRotator rotation;
+	float fov;
+	float desiredFOV;
+	float orthoWidth;
+	float orthoNearClipPlane;
+	float orthoFarClipPlane;
+	float aspectRatio;
+};
+
 static const short SET_LOCKON_FN_SIG[] =
 {
 	0x48, 0x89, 0x5C, 0x24, 0x08,
@@ -193,6 +210,7 @@ private:
 	ENTITY_PTRS target;
 	GetMaxDurability fnGetMaxDurability;
 
+	inline void ShowTestWindow(const FVector& headTagPos);
 	inline void ShowBasicStats(int iValues[], float fValues[], const ImVec2& progressBarSize);
 	inline void ShowElementalBuildup(const ImVec2& progressBarSize);
 	inline void ShowWeaponsDurability(int iValues[], const ImVec2& progressBarSize);

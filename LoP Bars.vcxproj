@@ -142,7 +142,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>"$(MSBuildProjectDirectory)\imgui";"$(MSBuildProjectDirectory)\imgui\backends";"$(MSBuildProjectDirectory)\minhook\include";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>"$(MSBuildProjectDirectory)\ImGui";"$(MSBuildProjectDirectory)\ImGui\backends";"$(MSBuildProjectDirectory)\MinHook\include";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,7 +167,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>"$(MSBuildProjectDirectory)\imgui";"$(MSBuildProjectDirectory)\imgui\backends";"$(MSBuildProjectDirectory)\minhook\include";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>"$(MSBuildProjectDirectory)\ImGui";"$(MSBuildProjectDirectory)\ImGui\backends";"$(MSBuildProjectDirectory)\MinHook\include";%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -220,6 +220,16 @@
     <ClInclude Include="ConfigManager.hpp" />
     <ClInclude Include="D3D12Hook.hpp" />
     <ClInclude Include="EntityBars.hpp" />
+    <ClInclude Include="game\Engine.hpp" />
+    <ClInclude Include="Game\IntPoint.h" />
+    <ClInclude Include="Game\IntRect.h" />
+    <ClInclude Include="Game\Matrix.h" />
+    <ClInclude Include="Game\Plane.h" />
+    <ClInclude Include="Game\Rotator.h" />
+    <ClInclude Include="Game\UnrealMathUtility.h" />
+    <ClInclude Include="Game\Vector.h" />
+    <ClInclude Include="Game\Vector2D.h" />
+    <ClInclude Include="Game\Vector4.h" />
     <ClInclude Include="ImGuiWindow.hpp" />
     <ClInclude Include="imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="imgui\backends\imgui_impl_win32.h" />

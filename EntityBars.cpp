@@ -279,6 +279,113 @@ void EntityBars::ShowWeaponsDurability(int iValues[], const ImVec2& progressBarS
 	}
 }
 
+FMatrix GetViewProjectionMatrix(const POV& viewInfo)
+{
+	auto viewport = ImGui::GetMainViewport();
+
+	int x = 0;
+	int y = 0;
+
+	int sizeX = viewport->Size.x;
+	int sizeY = viewport->Size.y;
+
+	FIntRect unconstrainedRect = FIntRect(x, y, x + sizeX, y + sizeY);
+
+	FVector viewOrigin = viewInfo.location;
+	FMatrix viewRotationMatrix = FInverseRotationMatrix(viewInfo.rotation) * FMatrix(
+		FPlane(0, 0, 1, 0),
+		FPlane(1, 0, 0, 0),
+		FPlane(0, 1, 0, 0),
+		FPlane(0, 0, 0, 1)
+	);
+
+	float XAxisMultiplier;
+	float YAxisMultiplier;
+	float MatrixHalfFOV;
+
+	if (sizeX < sizeY) // testing with this inverted
+	{
+		XAxisMultiplier = 1.0f;
+		YAxisMultiplier = sizeX / (float)sizeY;
+		const float HalfXFOV = FMath::DegreesToRadians(MAX(0.001f, viewInfo.fov) / 2.f);
+		const float HalfYFOV = std::atan(std::tan(HalfXFOV) / viewInfo.aspectRatio);
+		MatrixHalfFOV = HalfYFOV;
+	}
+	else
+	{
+		XAxisMultiplier = sizeY / (float)sizeX;
+		//YAxisMultiplier = sizeX / (float)sizeY;
+		YAxisMultiplier = 1.0f;
+		//MatrixHalfFOV = MAX(0.001f, viewInfo.fov) * (float)PI / 360.0f;
+		const float HalfXFOV = FMath::DegreesToRadians(MAX(0.001f, viewInfo.fov) / 2.f);
+		const float HalfYFOV = std::atan(std::tan(HalfXFOV) / viewInfo.aspectRatio);
+		MatrixHalfFOV = HalfYFOV;
+	}
+
+	FMatrix projectionMatrix = FReversedZPerspectiveMatrix(
+		MatrixHalfFOV,
+		MatrixHalfFOV,
+		XAxisMultiplier,
+		YAxisMultiplier,
+		viewInfo.orthoNearClipPlane,
+		viewInfo.orthoFarClipPlane
+	);
+
+	FMatrix viewProjectionMatrix = FTranslationMatrix(-viewOrigin) * viewRotationMatrix * projectionMatrix;
+	return viewProjectionMatrix;
+}
+
+bool WorldToScreen(const FVector& worldPos, FVector2D& screenPos)
+{
+	char* pLocalPlayer = (char*)*(uintptr_t*)((char*)utility::GetExecutable() + 0x735A810);
+	char* pPlayerController = (char*)*(uintptr_t*)(pLocalPlayer + 0x30);
+	char* pCameraManager = (char*)*(uintptr_t*)(pPlayerController + 0x278);
+	POV pov = *(POV*)(pCameraManager + 0xF00);
+
+	FMatrix viewProjectionMatrix = GetViewProjectionMatrix(pov);
+	FPlane result = viewProjectionMatrix.TransformFVector4(FVector4(worldPos, 1.0f));
+
+	if (result.W <= 0.0f)
+		return false;
+
+	const float RHW = 1.0f / result.W;
+
+	FPlane PosInScreenSpace = FPlane(result.X * RHW, result.Y * RHW, result.Z * RHW, result.W);
+
+	const float NormalizedX = (PosInScreenSpace.X / 2.f) + 0.5f;
+	const float NormalizedY = 1.f - (PosInScreenSpace.Y / 2.f) - 0.5f;
+
+	auto viewport = ImGui::GetMainViewport();
+
+	FVector2D RayStartViewRectSpace(
+		(NormalizedX * viewport->Size.x),
+		(NormalizedY * viewport->Size.y)
+	);
+
+	screenPos.X = RayStartViewRectSpace.X;
+	screenPos.Y = RayStartViewRectSpace.Y;
+
+	return true;
+}
+
+void EntityBars::ShowTestWindow(const FVector& headTagPos)
+{
+	FVector2D screenPos;
+
+	if (!WorldToScreen(headTagPos, screenPos))
+		return;
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
+
+	ImGui::SetNextWindowPos(ImVec2(screenPos.X, screenPos.Y - 20.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f));
+	if (ImGui::Begin("TestWindow", nullptr, windowFlags))
+	{
+		ImGui::Text("Helloworldddd!!xd");
+	}
+	ImGui::End();
+}
+
 void EntityBars::OnDraw()
 {
 	if (!bIsInitialized)
@@ -301,7 +408,7 @@ void EntityBars::OnDraw()
 	target.bFaction = *(target.pBase + 0x760);
 
 	// Quick offset fix for 1.2.0
-	target.pBase -= 0x10;
+	//target.pBase -= 0x10;
 
 	// Get entity's StatComponent
 	uintptr_t ptr = *(uintptr_t*)(target.pBase + 0x848);
@@ -321,7 +428,11 @@ void EntityBars::OnDraw()
 
 	// Get entity's EquipmentComponent
 	ptr = *(uintptr_t*)(target.pBase + 0x858);
-	target.weaponList = *(LIST_DATA*)(ptr + 0xF0);
+	target.weaponList = *(LIST_DATA*)(ptr + 0xF8); // 0xF8 for 1.3.0 and 0xF0 for 1.2.0
+
+	FVector headTag = *(FVector*)(target.pBase + 0x149C);
+	//FVector entityPos = *(FVector*)(*(uintptr_t*)(target.pBase + 0xF0) + 0x10C);
+	ShowTestWindow(headTag);
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
