@@ -337,7 +337,7 @@ FMatrix GetViewProjectionMatrix(const POV& viewInfo)
 
 bool WorldToScreen(const FVector& worldPos, FVector2D& screenPos)
 {
-	char* pLocalPlayer = (char*)*(uintptr_t*)((char*)utility::GetExecutable() + 0x735A810);
+	char* pLocalPlayer = (char*)*(uintptr_t*)((char*)utility::GetExecutable() + 0x7357830);
 	char* pPlayerController = (char*)*(uintptr_t*)(pLocalPlayer + 0x30);
 	char* pCameraManager = (char*)*(uintptr_t*)(pPlayerController + 0x278);
 	POV pov = *(POV*)(pCameraManager + 0xF00);
@@ -370,20 +370,48 @@ bool WorldToScreen(const FVector& worldPos, FVector2D& screenPos)
 
 void EntityBars::ShowTestWindow(const FVector& headTagPos)
 {
-	FVector2D screenPos;
+	static FVector2D screenPos;
+	static FVector2D lastScreenPos;
 
-	if (!WorldToScreen(headTagPos, screenPos))
+	FVector roundedHeadTagPos;
+	roundedHeadTagPos.X = FMath::RoundToFloat(headTagPos.X);
+	roundedHeadTagPos.Y = FMath::RoundToFloat(headTagPos.Y);
+	roundedHeadTagPos.Z = FMath::RoundToFloat(headTagPos.Z);
+
+	if (!WorldToScreen(roundedHeadTagPos, screenPos))
 		return;
+
+	if (lastScreenPos.Y - screenPos.Y > 20.0f)
+	{
+		int i = 234;
+	}
+	lastScreenPos = screenPos;
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
 
-	ImGui::SetNextWindowPos(ImVec2(screenPos.X, screenPos.Y - 20.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f));
+	ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() - 4.0f);
+
+	auto& style = ImGui::GetStyle();
+	style.WindowRounding = 0.0f;
+	style.FrameRounding = 0.0f;
+	style.FrameBorderSize = 1.0f;
+	style.WindowBorderSize = 0.0f;
+	style.ItemSpacing = ImVec2(4.0f, 1.0f);
+
+	ImGui::SetNextWindowBgAlpha(0.0f);
+	ImGui::SetNextWindowPos(ImVec2(screenPos.X, screenPos.Y - 3.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+	ImGui::SetNextWindowSize(ImVec2(106.0f, 0.0f));
 	if (ImGui::Begin("TestWindow", nullptr, windowFlags))
 	{
-		ImGui::Text("Helloworldddd!!xd");
+		ImGui::ProgressBar(100 / 100, progressBarSize, "", ImVec4(0.5f, 0.0f, 0.5f, 1.0f));
+		ImGui::ProgressBar(100 / 100, progressBarSize, "", ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 	}
 	ImGui::End();
+
+	style.WindowRounding = 4.0f;
+	style.FrameRounding = 4.0f;
+	style.WindowBorderSize = 1.0f;
+	style.ItemSpacing = ImVec2(8.0f, 4.0f);
 }
 
 void EntityBars::OnDraw()
