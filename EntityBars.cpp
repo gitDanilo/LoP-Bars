@@ -6,33 +6,14 @@
 #include <format>
 #include <limits>
 
-static EntityBars* gEntityBars = nullptr;
-
-EntityBars::EntityBars() : context(), bIsInitialized(false), pLockOnSystemData(nullptr), target(), fnGetMaxDurability(nullptr)
+EntityBars::EntityBars() : context(), bIsInitialized(false), pLockOnSystemStaticPtr(nullptr), target(), fnGetMaxDurability(nullptr)
 {
-	gEntityBars = this;
 	context.bShowWindow = true;
 }
 
 EntityBars::~EntityBars()
 {
-	if (pSetLockOnHook != nullptr)
-	{
-		pSetLockOnHook->Remove();
-	}
 
-	gEntityBars = nullptr;
-}
-
-void EntityBars::SetLockOnSystemData(void* unknown1, void* pLockOnSystemData, void* unknown2)
-{
-	LOG_INFO("SetLockOnSystemData called with: " << std::hex << unknown1 << ", " << pLockOnSystemData << ", " << unknown2);
-
-	auto fnSetLockOn = gEntityBars->pSetLockOnHook->GetOriginal<decltype(EntityBars::SetLockOnSystemData)>();
-
-	gEntityBars->pLockOnSystemData = (char*)pLockOnSystemData;
-
-	fnSetLockOn(unknown1, pLockOnSystemData, unknown2);
 }
 
 bool EntityBars::OnInitialize()
@@ -55,32 +36,45 @@ bool EntityBars::OnInitialize()
 		return false;
 	}
 
-	auto pFunction = utility::PatternScan(SET_LOCKON_FN_SIG, sizeof(SET_LOCKON_FN_SIG), hExec, sizeExec.value_or(0));
-	if (pFunction == nullptr)
+	char* ptr = utility::PatternScan(GET_LOCKONSYSTEM_FN_SIG, sizeof(GET_LOCKONSYSTEM_FN_SIG), hExec, sizeExec.value_or(0));
+	if (ptr == nullptr)
 	{
-		LOG_ERROR("Failed to find SetLockOn function signature");
+		LOG_ERROR("Failed to find GetLockOnSystem function signature");
 		return false;
 	}
 
-	//if (utility::PatternScan(SET_LOCKON_FN_SIGNATURE, sizeof(SET_LOCKON_FN_SIGNATURE), pFunction + 1, sizeExec.value_or(0)) != nullptr)
-	//{
-	//	LOG_ERROR("Failed to find the unique function signature of SetLockOn");
-	//	return false;
-	//}
-
-	pSetLockOnHook = std::make_unique<FunctionHook>(pFunction, &EntityBars::SetLockOnSystemData);
-	if (!pSetLockOnHook->Create())
+	ptr = ptr + 0x20; // Move ptr to the call parameter
+	int offset = *(int*)ptr; // Read the function offset
+	ptr = ptr + sizeof(int); // Move ptr to the next instruction (after call)
+	ptr = ptr + offset; // Move ptr to the function address (in this case it's a vtable pointer)
+	if (*ptr != (char)0xE9) // This must be a jmp instruction, we are looking for a vtable reference here
 	{
+		LOG_ERROR("Failed to locate GetLockOnSystem function address");
+		return false;
+	}
+	offset = *(int*)(++ptr); // Inc ptr and read the function offset
+	ptr = ptr + sizeof(int); // Move ptr to the next instruction
+	ptr = ptr + offset; // Move ptr to the begining of the function
+	ptr = ptr + 7; // Move ptr to the offset of the static pointer
+	offset = *(int*)ptr; // Read the offset of the static pointer
+	ptr = ptr + sizeof(int); // Move ptr to the next instruction (after mov)
+	
+	pLockOnSystemStaticPtr = ptr + offset; // Read the static address
+
+	if (utility::IsBadReadPtr(pLockOnSystemStaticPtr))
+	{
+		LOG_ERROR("LockOnSystem static pointer is bad read");
 		return false;
 	}
 
-	pFunction = utility::PatternScan(GET_MAX_DURABILITY_FN_SIG, sizeof(GET_MAX_DURABILITY_FN_SIG), hExec, sizeExec.value_or(0));
-	if (pFunction == nullptr)
+	ptr = utility::PatternScan(GET_MAX_DURABILITY_FN_SIG, sizeof(GET_MAX_DURABILITY_FN_SIG), hExec, sizeExec.value_or(0));
+	if (ptr == nullptr)
 	{
+		LOG_ERROR("Failed to find GetMaxDurability function signature");
 		return false;
 	}
 
-	fnGetMaxDurability = (GetMaxDurability)pFunction;
+	fnGetMaxDurability = (GetMaxDurability)ptr;
 
 	bIsInitialized = true;
 
@@ -279,140 +273,139 @@ void EntityBars::ShowWeaponsDurability(int iValues[], const ImVec2& progressBarS
 	}
 }
 
-FMatrix GetViewProjectionMatrix(const POV& viewInfo)
-{
-	auto viewport = ImGui::GetMainViewport();
-
-	int x = 0;
-	int y = 0;
-
-	int sizeX = viewport->Size.x;
-	int sizeY = viewport->Size.y;
-
-	FIntRect unconstrainedRect = FIntRect(x, y, x + sizeX, y + sizeY);
-
-	FVector viewOrigin = viewInfo.location;
-	FMatrix viewRotationMatrix = FInverseRotationMatrix(viewInfo.rotation) * FMatrix(
-		FPlane(0, 0, 1, 0),
-		FPlane(1, 0, 0, 0),
-		FPlane(0, 1, 0, 0),
-		FPlane(0, 0, 0, 1)
-	);
-
-	float XAxisMultiplier;
-	float YAxisMultiplier;
-	float MatrixHalfFOV;
-
-	if (sizeX < sizeY) // testing with this inverted
-	{
-		XAxisMultiplier = 1.0f;
-		YAxisMultiplier = sizeX / (float)sizeY;
-		const float HalfXFOV = FMath::DegreesToRadians(MAX(0.001f, viewInfo.fov) / 2.f);
-		const float HalfYFOV = std::atan(std::tan(HalfXFOV) / viewInfo.aspectRatio);
-		MatrixHalfFOV = HalfYFOV;
-	}
-	else
-	{
-		XAxisMultiplier = sizeY / (float)sizeX;
-		//YAxisMultiplier = sizeX / (float)sizeY;
-		YAxisMultiplier = 1.0f;
-		//MatrixHalfFOV = MAX(0.001f, viewInfo.fov) * (float)PI / 360.0f;
-		const float HalfXFOV = FMath::DegreesToRadians(MAX(0.001f, viewInfo.fov) / 2.f);
-		const float HalfYFOV = std::atan(std::tan(HalfXFOV) / viewInfo.aspectRatio);
-		MatrixHalfFOV = HalfYFOV;
-	}
-
-	FMatrix projectionMatrix = FReversedZPerspectiveMatrix(
-		MatrixHalfFOV,
-		MatrixHalfFOV,
-		XAxisMultiplier,
-		YAxisMultiplier,
-		viewInfo.orthoNearClipPlane,
-		viewInfo.orthoFarClipPlane
-	);
-
-	FMatrix viewProjectionMatrix = FTranslationMatrix(-viewOrigin) * viewRotationMatrix * projectionMatrix;
-	return viewProjectionMatrix;
-}
-
-bool WorldToScreen(const FVector& worldPos, FVector2D& screenPos)
-{
-	char* pLocalPlayer = (char*)*(uintptr_t*)((char*)utility::GetExecutable() + 0x7357830);
-	char* pPlayerController = (char*)*(uintptr_t*)(pLocalPlayer + 0x30);
-	char* pCameraManager = (char*)*(uintptr_t*)(pPlayerController + 0x278);
-	POV pov = *(POV*)(pCameraManager + 0xF00);
-
-	FMatrix viewProjectionMatrix = GetViewProjectionMatrix(pov);
-	FPlane result = viewProjectionMatrix.TransformFVector4(FVector4(worldPos, 1.0f));
-
-	if (result.W <= 0.0f)
-		return false;
-
-	const float RHW = 1.0f / result.W;
-
-	FPlane PosInScreenSpace = FPlane(result.X * RHW, result.Y * RHW, result.Z * RHW, result.W);
-
-	const float NormalizedX = (PosInScreenSpace.X / 2.f) + 0.5f;
-	const float NormalizedY = 1.f - (PosInScreenSpace.Y / 2.f) - 0.5f;
-
-	auto viewport = ImGui::GetMainViewport();
-
-	FVector2D RayStartViewRectSpace(
-		(NormalizedX * viewport->Size.x),
-		(NormalizedY * viewport->Size.y)
-	);
-
-	screenPos.X = RayStartViewRectSpace.X;
-	screenPos.Y = RayStartViewRectSpace.Y;
-
-	return true;
-}
-
-void EntityBars::ShowTestWindow(const FVector& headTagPos)
-{
-	static FVector2D screenPos;
-	static FVector2D lastScreenPos;
-
-	FVector roundedHeadTagPos;
-	roundedHeadTagPos.X = FMath::RoundToFloat(headTagPos.X);
-	roundedHeadTagPos.Y = FMath::RoundToFloat(headTagPos.Y);
-	roundedHeadTagPos.Z = FMath::RoundToFloat(headTagPos.Z);
-
-	if (!WorldToScreen(roundedHeadTagPos, screenPos))
-		return;
-
-	if (lastScreenPos.Y - screenPos.Y > 20.0f)
-	{
-		int i = 234;
-	}
-	lastScreenPos = screenPos;
-
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
-
-	ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() - 4.0f);
-
-	auto& style = ImGui::GetStyle();
-	style.WindowRounding = 0.0f;
-	style.FrameRounding = 0.0f;
-	style.FrameBorderSize = 1.0f;
-	style.WindowBorderSize = 0.0f;
-	style.ItemSpacing = ImVec2(4.0f, 1.0f);
-
-	ImGui::SetNextWindowBgAlpha(0.0f);
-	ImGui::SetNextWindowPos(ImVec2(screenPos.X, screenPos.Y - 3.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowSize(ImVec2(106.0f, 0.0f));
-	if (ImGui::Begin("TestWindow", nullptr, windowFlags))
-	{
-		ImGui::ProgressBar(100 / 100, progressBarSize, "", ImVec4(0.5f, 0.0f, 0.5f, 1.0f));
-		ImGui::ProgressBar(100 / 100, progressBarSize, "", ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-	}
-	ImGui::End();
-
-	style.WindowRounding = 4.0f;
-	style.FrameRounding = 4.0f;
-	style.WindowBorderSize = 1.0f;
-	style.ItemSpacing = ImVec2(8.0f, 4.0f);
-}
+//FMatrix GetViewProjectionMatrix(const POV& viewInfo)
+//{
+//	auto viewport = ImGui::GetMainViewport();
+//
+//	int x = 0;
+//	int y = 0;
+//
+//	int sizeX = viewport->Size.x;
+//	int sizeY = viewport->Size.y;
+//
+//	FIntRect unconstrainedRect = FIntRect(x, y, x + sizeX, y + sizeY);
+//
+//	FVector viewOrigin = viewInfo.location;
+//	FMatrix viewRotationMatrix = FInverseRotationMatrix(viewInfo.rotation) * FMatrix(
+//		FPlane(0, 0, 1, 0),
+//		FPlane(1, 0, 0, 0),
+//		FPlane(0, 1, 0, 0),
+//		FPlane(0, 0, 0, 1)
+//	);
+//
+//	float XAxisMultiplier;
+//	float YAxisMultiplier;
+//	float MatrixHalfFOV;
+//
+//	//if (sizeX > sizeY)
+//	//{
+//	//	XAxisMultiplier = 1.0f;
+//	//	YAxisMultiplier = sizeX / (float)sizeY;
+//	//	const float HalfXFOV = FMath::DegreesToRadians(MAX(0.001f, viewInfo.fov) / 2.f);
+//	//	const float HalfYFOV = std::atan(std::tan(HalfXFOV) / viewInfo.aspectRatio);
+//	//	MatrixHalfFOV = HalfYFOV;
+//	//}
+//	//else
+//	{
+//		XAxisMultiplier = sizeY / (float)sizeX;
+//		YAxisMultiplier = 1.0f;
+//		//MatrixHalfFOV = MAX(0.001f, viewInfo.fov) * (float)PI / 360.0f;
+//		const float HalfXFOV = FMath::DegreesToRadians(MAX(0.001f, viewInfo.fov) / 2.f);
+//		const float HalfYFOV = std::atan(std::tan(HalfXFOV) / viewInfo.aspectRatio);
+//		MatrixHalfFOV = HalfYFOV;
+//	}
+//
+//	FMatrix projectionMatrix = FReversedZPerspectiveMatrix(
+//		MatrixHalfFOV,
+//		MatrixHalfFOV,
+//		XAxisMultiplier,
+//		YAxisMultiplier,
+//		viewInfo.orthoNearClipPlane,
+//		viewInfo.orthoFarClipPlane
+//	);
+//
+//	FMatrix viewProjectionMatrix = FTranslationMatrix(-viewOrigin) * viewRotationMatrix * projectionMatrix;
+//	return viewProjectionMatrix;
+//}
+//
+//bool WorldToScreen(const FVector& worldPos, FVector2D& screenPos)
+//{
+//	char* pLocalPlayer = (char*)*(uintptr_t*)((char*)utility::GetExecutable() + 0x7357830);
+//	char* pPlayerController = (char*)*(uintptr_t*)(pLocalPlayer + 0x30);
+//	char* pCameraManager = (char*)*(uintptr_t*)(pPlayerController + 0x278);
+//	POV pov = *(POV*)(pCameraManager + 0xF00);
+//
+//	FMatrix viewProjectionMatrix = GetViewProjectionMatrix(pov);
+//	FPlane result = viewProjectionMatrix.TransformFVector4(FVector4(worldPos, 1.0f));
+//
+//	if (result.W <= 0.0f)
+//		return false;
+//
+//	const float RHW = 1.0f / result.W;
+//
+//	FPlane PosInScreenSpace = FPlane(result.X * RHW, result.Y * RHW, result.Z * RHW, result.W);
+//
+//	const float NormalizedX = (PosInScreenSpace.X / 2.f) + 0.5f;
+//	const float NormalizedY = 1.f - (PosInScreenSpace.Y / 2.f) - 0.5f;
+//
+//	auto viewport = ImGui::GetMainViewport();
+//
+//	FVector2D RayStartViewRectSpace(
+//		(NormalizedX * viewport->Size.x),
+//		(NormalizedY * viewport->Size.y)
+//	);
+//
+//	screenPos.X = RayStartViewRectSpace.X;
+//	screenPos.Y = RayStartViewRectSpace.Y;
+//
+//	return true;
+//}
+//
+//void EntityBars::ShowTestWindow(const FVector& headTagPos)
+//{
+//	static FVector2D screenPos;
+//	//static FVector2D lastScreenPos;
+//
+//	FVector roundedHeadTagPos;
+//	roundedHeadTagPos.X = FMath::RoundToFloat(headTagPos.X);
+//	roundedHeadTagPos.Y = FMath::RoundToFloat(headTagPos.Y);
+//	roundedHeadTagPos.Z = FMath::RoundToFloat(headTagPos.Z);
+//
+//	if (!WorldToScreen(roundedHeadTagPos, screenPos))
+//		return;
+//
+//	//if (lastScreenPos.Y - screenPos.Y > 20.0f)
+//	//{
+//	//	int i = 234;
+//	//}
+//	//lastScreenPos = screenPos;
+//
+//	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration;
+//
+//	ImVec2 progressBarSize = ImVec2(-1.0f, ImGui::GetFontSize() - 4.0f);
+//
+//	auto& style = ImGui::GetStyle();
+//	style.WindowRounding = 0.0f;
+//	style.FrameRounding = 0.0f;
+//	style.FrameBorderSize = 1.0f;
+//	style.WindowBorderSize = 0.0f;
+//	style.ItemSpacing = ImVec2(4.0f, 1.0f);
+//
+//	ImGui::SetNextWindowBgAlpha(0.0f);
+//	ImGui::SetNextWindowPos(ImVec2(screenPos.X, screenPos.Y - 3.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+//	ImGui::SetNextWindowSize(ImVec2(106.0f, 0.0f));
+//	if (ImGui::Begin("TestWindow", nullptr, windowFlags))
+//	{
+//		ImGui::ProgressBar(100 / 100, progressBarSize, "", ImVec4(0.5f, 0.0f, 0.5f, 1.0f));
+//		ImGui::ProgressBar(100 / 100, progressBarSize, "", ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+//	}
+//	ImGui::End();
+//
+//	style.WindowRounding = 4.0f;
+//	style.FrameRounding = 4.0f;
+//	style.WindowBorderSize = 1.0f;
+//	style.ItemSpacing = ImVec2(8.0f, 4.0f);
+//}
 
 void EntityBars::OnDraw()
 {
@@ -422,7 +415,13 @@ void EntityBars::OnDraw()
 	static WND_CONTEXT tmpContext;
 	context.GetData(tmpContext);
 
-	if (!tmpContext.bShowWindow || pLockOnSystemData == nullptr)
+	auto pLockOnSystem = (char*)*(uintptr_t*)pLockOnSystemStaticPtr;
+
+	if (!tmpContext.bShowWindow || pLockOnSystem == nullptr)
+		return;
+
+	auto pLockOnSystemData = (char*)*(uintptr_t*)(pLockOnSystem + 0x98);
+	if (pLockOnSystemData == nullptr)
 		return;
 
 	target.pBase = (char*)*(uintptr_t*)(pLockOnSystemData + 0x200);
@@ -458,9 +457,9 @@ void EntityBars::OnDraw()
 	ptr = *(uintptr_t*)(target.pBase + 0x858);
 	target.weaponList = *(LIST_DATA*)(ptr + 0xF8); // 0xF8 for 1.3.0 and 0xF0 for 1.2.0
 
-	FVector headTag = *(FVector*)(target.pBase + 0x149C);
+	//FVector headTag = *(FVector*)(target.pBase + 0x149C);
 	//FVector entityPos = *(FVector*)(*(uintptr_t*)(target.pBase + 0xF0) + 0x10C);
-	ShowTestWindow(headTag);
+	//ShowTestWindow(headTag);
 
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 

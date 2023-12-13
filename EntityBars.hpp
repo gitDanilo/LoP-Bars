@@ -8,11 +8,11 @@
 #include "imgui.h"
 #include "ImGuiWindow.hpp"
 #include "utility/FunctionHook.hpp"
-#include "Game/Matrix.h"
-#include "Game/Vector2D.h"
-#include "Game/Vector.h"
-#include "Game/Rotator.h"
-#include "Game/IntRect.h"
+//#include "Game/Matrix.h"
+//#include "Game/Vector2D.h"
+//#include "Game/Vector.h"
+//#include "Game/Rotator.h"
+//#include "Game/IntRect.h"
 
 using namespace std::string_view_literals;
 
@@ -133,42 +133,34 @@ struct ENTITY_PTRS
 	LIST_DATA weaponList;
 };
 
-struct POV
-{
-	FVector location;
-	FRotator rotation;
-	float fov;
-	float desiredFOV;
-	float orthoWidth;
-	float orthoNearClipPlane;
-	float orthoFarClipPlane;
-	float aspectRatio;
-};
+//struct POV
+//{
+//	FVector location;
+//	FRotator rotation;
+//	float fov;
+//	float desiredFOV;
+//	float orthoWidth;
+//	float orthoNearClipPlane;
+//	float orthoFarClipPlane;
+//	float aspectRatio;
+//};
 
-static const short SET_LOCKON_FN_SIG[] =
+static const short GET_LOCKONSYSTEM_FN_SIG[] =
 {
-	0x48, 0x89, 0x5C, 0x24, 0x08,
-	0x57,
-	0x48, 0x83, 0xEC, 0x20,
-	0x48, 0x89, 0xD7,
-	0x48, 0x89, 0xCB,
-	0x48, 0x85, 0xD2,
+	0xC1, 0xE8, 0x1D,
+	0xA8, 0x01,
+	0x0F, 0x85, -1, -1, -1, -1,
+	0x41, 0x80, 0xFD, 0x0D,
 	0x0F, 0x84, -1, -1, -1, -1,
+	0x40, 0xB7, 0x01,
+	0xE9, -1, -1, -1, -1,
+	0xB3, 0x01,
 	0xE8, -1, -1, -1, -1,
-	0x48, 0x8B, 0x57, 0x10,
-	0x4C, 0x8D, 0x40, 0x30,
-	0x48, 0x63, 0x40, 0x38,
-	0x3B, 0x42, 0x38,
-	0x7F, -1,
-	0x48, 0x89, 0xC1,
-	0x48, 0x8B, 0x42, 0x30,
-	0x4C, 0x39, 0x04, 0xC8,
-	0x75, -1,
-	0x48, 0x89, 0xBB, 0x98, 0x00, 0x00, 0x00,
-	//0x66, 0x8B ,0x3D,
+	0x45, 0x0F, 0xB6, 0x8E, -1, -1, -1, -1,
+	0x49, 0x8D, 0x4F, 0x08,
 };
 
-static const size_t SET_LOCKON_FN_SIG_OFFSET = 0x0;
+static const size_t GET_LOCKONSYSTEM_FN_SIG_OFFSET = 0x0;
 
 static const short GET_MAX_DURABILITY_FN_SIG[] =
 {
@@ -200,17 +192,15 @@ public:
 	bool OnInitialize() override;
 	void OnReset() override;
 	bool OnMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) override;
-	static void __stdcall SetLockOnSystemData(void* unknown1, void* pLockOnSystemData, void* unknown2);
 private:
 	bool bIsInitialized;
 	MUTEX_WND_CONTEXT context;
 
-	std::unique_ptr<FunctionHook> pSetLockOnHook;
-	char* pLockOnSystemData;
+	char* pLockOnSystemStaticPtr;
 	ENTITY_PTRS target;
 	GetMaxDurability fnGetMaxDurability;
 
-	inline void ShowTestWindow(const FVector& headTagPos);
+	//inline void ShowTestWindow(const FVector& headTagPos);
 	inline void ShowBasicStats(int iValues[], float fValues[], const ImVec2& progressBarSize);
 	inline void ShowElementalBuildup(const ImVec2& progressBarSize);
 	inline void ShowWeaponsDurability(int iValues[], const ImVec2& progressBarSize);
